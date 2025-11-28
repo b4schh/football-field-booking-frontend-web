@@ -1,0 +1,80 @@
+@import url('./assets/fonts/inter/inter.css');
+
+/* ---------------------------------------------------
+   1. Tailwind Layers
+--------------------------------------------------- */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@keyframes slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in {
+  animation: slide-in 0.3s ease-out;
+}
+
+
+/* ---------------------------------------------------
+   2. Global Reset (cơ bản nhất, không phá layout)
+--------------------------------------------------- */
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+/* Tối ưu render text */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth; /* Optional: mượt hơn */
+}
+
+/* Reset link nhưng giữ màu Tailwind */
+a {
+  text-decoration: none;
+}
+
+
+/* ---------------------------------------------------
+   3. Global Defaults
+--------------------------------------------------- */
+
+/* Font mặc định cho toàn app (Tailwind vẫn override được) */
+body {
+  @apply font-sans bg-gray-50 text-gray-900 antialiased;
+}
+
+
+/* Hide scrollbar đẹp hơn nhưng BẮT BUỘC optional */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1; /* slate-300 */
+  border-radius: 10px;
+}
+
+/* ---------------------------------------------------
+   4. Custom Utilities (optional)
+--------------------------------------------------- */
+
+/* Class để disable select text */
+.no-select {
+  user-select: none;
+}
+
+/* Class để wrap text đẹp */
+.text-balance {
+  text-wrap: balance;
+}

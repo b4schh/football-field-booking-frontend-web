@@ -1,0 +1,2356 @@
+{
+  "success": true,
+  "message": "Lấy thông tin availability thành công",
+  "statusCode": 200,
+  "data": {
+    "complexId": 3,
+    "days": [
+      {
+        "date": "2025-11-27",
+        "timeSlots": [
+          {
+            "startTime": "06:00",
+            "endTime": "07:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 100,
+                "price": 240000,
+                "isBooked": false,
+                "isPast": true
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 111,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": true
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 122,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": true
+              }
+            ]
+          },
+          {
+            "startTime": "07:30",
+            "endTime": "09:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 101,
+                "price": 240000,
+                "isBooked": false,
+                "isPast": true
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 112,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": true
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 123,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": true
+              }
+            ]
+          },
+          {
+            "startTime": "09:00",
+            "endTime": "10:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 102,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": true
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 113,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": true
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 124,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": true
+              }
+            ]
+          },
+          {
+            "startTime": "10:30",
+            "endTime": "12:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 103,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 114,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 125,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "12:00",
+            "endTime": "13:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 104,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 115,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 126,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "13:30",
+            "endTime": "15:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 105,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 116,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 127,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "15:00",
+            "endTime": "16:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 106,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 117,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 128,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "16:30",
+            "endTime": "18:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 107,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 118,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 129,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "18:00",
+            "endTime": "19:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 108,
+                "price": 390000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 119,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 130,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "19:30",
+            "endTime": "21:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 109,
+                "price": 390000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 120,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 131,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "21:00",
+            "endTime": "22:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 110,
+                "price": 360000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 121,
+                "price": 600000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 132,
+                "price": 600000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "date": "2025-11-28",
+        "timeSlots": [
+          {
+            "startTime": "06:00",
+            "endTime": "07:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 100,
+                "price": 240000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 111,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 122,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "07:30",
+            "endTime": "09:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 101,
+                "price": 240000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 112,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 123,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "09:00",
+            "endTime": "10:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 102,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 113,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 124,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "10:30",
+            "endTime": "12:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 103,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 114,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 125,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "12:00",
+            "endTime": "13:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 104,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 115,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 126,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "13:30",
+            "endTime": "15:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 105,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 116,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 127,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "15:00",
+            "endTime": "16:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 106,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 117,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 128,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "16:30",
+            "endTime": "18:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 107,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 118,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 129,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "18:00",
+            "endTime": "19:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 108,
+                "price": 390000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 119,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 130,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "19:30",
+            "endTime": "21:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 109,
+                "price": 390000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 120,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 131,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "21:00",
+            "endTime": "22:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 110,
+                "price": 360000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 121,
+                "price": 600000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 132,
+                "price": 600000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "date": "2025-11-29",
+        "timeSlots": [
+          {
+            "startTime": "06:00",
+            "endTime": "07:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 100,
+                "price": 240000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 111,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 122,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "07:30",
+            "endTime": "09:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 101,
+                "price": 240000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 112,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 123,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "09:00",
+            "endTime": "10:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 102,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 113,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 124,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "10:30",
+            "endTime": "12:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 103,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 114,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 125,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "12:00",
+            "endTime": "13:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 104,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 115,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 126,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "13:30",
+            "endTime": "15:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 105,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 116,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 127,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "15:00",
+            "endTime": "16:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 106,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 117,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 128,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "16:30",
+            "endTime": "18:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 107,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 118,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 129,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "18:00",
+            "endTime": "19:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 108,
+                "price": 390000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 119,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 130,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "19:30",
+            "endTime": "21:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 109,
+                "price": 390000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 120,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 131,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "21:00",
+            "endTime": "22:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 110,
+                "price": 360000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 121,
+                "price": 600000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 132,
+                "price": 600000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "date": "2025-11-30",
+        "timeSlots": [
+          {
+            "startTime": "06:00",
+            "endTime": "07:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 100,
+                "price": 240000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 111,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 122,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "07:30",
+            "endTime": "09:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 101,
+                "price": 240000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 112,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 123,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "09:00",
+            "endTime": "10:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 102,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 113,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 124,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "10:30",
+            "endTime": "12:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 103,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 114,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 125,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "12:00",
+            "endTime": "13:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 104,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 115,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 126,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "13:30",
+            "endTime": "15:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 105,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 116,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 127,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "15:00",
+            "endTime": "16:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 106,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 117,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 128,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "16:30",
+            "endTime": "18:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 107,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 118,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 129,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "18:00",
+            "endTime": "19:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 108,
+                "price": 390000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 119,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 130,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "19:30",
+            "endTime": "21:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 109,
+                "price": 390000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 120,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 131,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "21:00",
+            "endTime": "22:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 110,
+                "price": 360000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 121,
+                "price": 600000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 132,
+                "price": 600000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "date": "2025-12-01",
+        "timeSlots": [
+          {
+            "startTime": "06:00",
+            "endTime": "07:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 100,
+                "price": 240000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 111,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 122,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "07:30",
+            "endTime": "09:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 101,
+                "price": 240000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 112,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 123,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "09:00",
+            "endTime": "10:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 102,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 113,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 124,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "10:30",
+            "endTime": "12:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 103,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 114,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 125,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "12:00",
+            "endTime": "13:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 104,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 115,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 126,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "13:30",
+            "endTime": "15:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 105,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 116,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 127,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "15:00",
+            "endTime": "16:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 106,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 117,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 128,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "16:30",
+            "endTime": "18:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 107,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 118,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 129,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "18:00",
+            "endTime": "19:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 108,
+                "price": 390000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 119,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 130,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "19:30",
+            "endTime": "21:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 109,
+                "price": 390000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 120,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 131,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "21:00",
+            "endTime": "22:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 110,
+                "price": 360000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 121,
+                "price": 600000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 132,
+                "price": 600000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "date": "2025-12-02",
+        "timeSlots": [
+          {
+            "startTime": "06:00",
+            "endTime": "07:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 100,
+                "price": 240000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 111,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 122,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "07:30",
+            "endTime": "09:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 101,
+                "price": 240000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 112,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 123,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "09:00",
+            "endTime": "10:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 102,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 113,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 124,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "10:30",
+            "endTime": "12:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 103,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 114,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 125,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "12:00",
+            "endTime": "13:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 104,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 115,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 126,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "13:30",
+            "endTime": "15:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 105,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 116,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 127,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "15:00",
+            "endTime": "16:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 106,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 117,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 128,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "16:30",
+            "endTime": "18:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 107,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 118,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 129,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "18:00",
+            "endTime": "19:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 108,
+                "price": 390000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 119,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 130,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "19:30",
+            "endTime": "21:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 109,
+                "price": 390000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 120,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 131,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "21:00",
+            "endTime": "22:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 110,
+                "price": 360000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 121,
+                "price": 600000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 132,
+                "price": 600000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "date": "2025-12-03",
+        "timeSlots": [
+          {
+            "startTime": "06:00",
+            "endTime": "07:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 100,
+                "price": 240000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 111,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 122,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "07:30",
+            "endTime": "09:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 101,
+                "price": 240000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 112,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 123,
+                "price": 400000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "09:00",
+            "endTime": "10:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 102,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 113,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 124,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "10:30",
+            "endTime": "12:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 103,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 114,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 125,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "12:00",
+            "endTime": "13:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 104,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 115,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 126,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "13:30",
+            "endTime": "15:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 105,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 116,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 127,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "15:00",
+            "endTime": "16:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 106,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 117,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 128,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "16:30",
+            "endTime": "18:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 107,
+                "price": 300000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 118,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 129,
+                "price": 500000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "18:00",
+            "endTime": "19:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 108,
+                "price": 390000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 119,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 130,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "19:30",
+            "endTime": "21:00",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 109,
+                "price": 390000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 120,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 131,
+                "price": 650000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          },
+          {
+            "startTime": "21:00",
+            "endTime": "22:30",
+            "fields": [
+              {
+                "fieldId": 10,
+                "fieldName": "Sân 1",
+                "timeSlotId": 110,
+                "price": 360000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 11,
+                "fieldName": "Sân 2",
+                "timeSlotId": 121,
+                "price": 600000,
+                "isBooked": false,
+                "isPast": false
+              },
+              {
+                "fieldId": 12,
+                "fieldName": "Sân 3",
+                "timeSlotId": 132,
+                "price": 600000,
+                "isBooked": false,
+                "isPast": false
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "errors": null
+}
