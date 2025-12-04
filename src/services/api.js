@@ -9,6 +9,22 @@ const api = axios.create({
   },
 });
 
+// Flag để tránh multiple refresh cùng lúc
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach(prom => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  
+  failedQueue = [];
+};
+
 // Request interceptor - thêm token vào mỗi request
 api.interceptors.request.use(
   (config) => {
@@ -23,23 +39,111 @@ api.interceptors.request.use(
   }
 );
 
-// Response interceptor - xử lý lỗi tập trung
+// Response interceptor - xử lý lỗi và auto refresh token
 api.interceptors.response.use(
   (response) => {
     return response;
   },
-  (error) => {
+  async (error) => {
+    const originalRequest = error.config;
+
+    // Nếu lỗi 401 và chưa retry
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      
+      // Nếu request là refresh-token endpoint thì không retry
+      if (originalRequest.url?.includes('/auth/refresh-token')) {
+        // Refresh token cũng fail, logout user
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("auth-storage");
+        window.location.href = "/";
+        return Promise.reject(error);
+      }
+
+      if (isRefreshing) {
+        // Đang refresh, đợi refresh xong rồi retry
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then(token => {
+            originalRequest.headers['Authorization'] = 'Bearer ' + token;
+            return api(originalRequest);
+          })
+          .catch(err => {
+            return Promise.reject(err);
+          });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      // Lấy auth store
+      const authStorage = localStorage.getItem("auth-storage");
+      if (!authStorage) {
+        isRefreshing = false;
+        window.location.href = "/";
+        return Promise.reject(error);
+      }
+
+      try {
+        const { state } = JSON.parse(authStorage);
+        const refreshToken = state?.refreshToken;
+
+        if (!refreshToken) {
+          throw new Error('No refresh token available');
+        }
+
+        // Gọi API refresh token
+        const response = await axios.post(
+          `${api.defaults.baseURL}/auth/refresh-token`,
+          { refreshToken }
+        );
+
+        const { token: newToken, refreshToken: newRefreshToken, expiresAt, refreshTokenExpiresAt } = response.data.data;
+
+        // Update localStorage
+        const newAuthStorage = {
+          state: {
+            ...state,
+            token: newToken,
+            refreshToken: newRefreshToken,
+            tokenExpiresAt: expiresAt ? new Date(expiresAt).getTime() : null,
+            refreshTokenExpiresAt: refreshTokenExpiresAt ? new Date(refreshTokenExpiresAt).getTime() : null,
+          },
+          version: 0
+        };
+        localStorage.setItem("auth-storage", JSON.stringify(newAuthStorage));
+        localStorage.setItem("token", newToken);
+
+        // Update axios default header
+        api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+        originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
+
+        // Process queued requests
+        processQueue(null, newToken);
+        isRefreshing = false;
+
+        // Retry original request
+        return api(originalRequest);
+
+      } catch (refreshError) {
+        processQueue(refreshError, null);
+        isRefreshing = false;
+        
+        // Refresh failed, logout
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("auth-storage");
+        window.location.href = "/";
+        
+        return Promise.reject(refreshError);
+      }
+    }
+
+    // Xử lý các lỗi khác
     if (error.response) {
-      // Server trả về lỗi
       switch (error.response.status) {
-        case 401:
-          // Token hết hạn hoặc không hợp lệ
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-          window.location.href = "/login";
-          break;
         case 403:
-          // Không có quyền truy cập
           console.error("Bạn không có quyền truy cập tài nguyên này");
           break;
         case 404:
@@ -52,12 +156,11 @@ api.interceptors.response.use(
           break;
       }
     } else if (error.request) {
-      // Request được gửi nhưng không nhận được response
       console.error("Không thể kết nối tới server");
     } else {
-      // Lỗi khác
       console.error("Đã xảy ra lỗi:", error.message);
     }
+    
     return Promise.reject(error);
   }
 );

@@ -1,10 +1,12 @@
 import { HiOutlineBell } from "react-icons/hi2";
 import { FiUser } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 import { useAuthStore, useAuthModalStore } from "../../store";
 import UserMenu from "./UserMenu";
 import AuthModal from "./AuthModal";
 
 export default function Header() {
+  const navigate = useNavigate();
   const { isAuthenticated, user } = useAuthStore();
   const { isOpen, openAuthModal, closeAuthModal, handleSuccess } = useAuthModalStore();
 
@@ -19,7 +21,10 @@ export default function Header() {
       <header className="bg-white shadow-sm">
         <div className="container mx-auto px-6 md:px-8 lg:px-20 py-4 flex items-center justify-between">
           {/* Logo */}
-          <div className="flex items-center gap-3">
+          <div 
+            className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition"
+            onClick={() => navigate('/')}
+          >
             <div className="w-12 h-12 flex items-center justify-center rounded-full overflow-hidden">
               <img
                 src="/src/assets/img/logo.png"

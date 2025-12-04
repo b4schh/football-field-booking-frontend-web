@@ -3,6 +3,7 @@ import { FaStar, FaRegStar, FaThumbsUp } from "react-icons/fa";
 import { FiThumbsUp, FiMessageSquare } from "react-icons/fi";
 import useReviewStore from "../../store/reviewStore";
 import { getRoleDisplayName } from "../../utils/roleHelpers";
+import { getAvatarUrl } from "../../utils/imageHelper";
 import ProtectedAction from "./ProtectedAction";
 
 function StarRating({ rating, size = 16 }) {
@@ -56,7 +57,7 @@ function ReviewCard({ review, onVoteHelpful, onUnvoteHelpful, isVoted }) {
   const remainingImages = review.images.length - 3;
   
   // Generate avatar URL if not provided
-  const avatarUrl = review.user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(review.user.name)}&background=3b82f6&color=fff`;
+  const avatarUrl = getAvatarUrl(review.user.avatar, review.user.name);
 
   return (
     <div className="border-b border-gray-200 pb-6 last:border-b-0">

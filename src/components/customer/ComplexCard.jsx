@@ -3,6 +3,7 @@ import { IoPhonePortraitOutline } from "react-icons/io5";
 import { GiSoccerField } from "react-icons/gi";
 import { MdAccessTime } from "react-icons/md";
 import { Link } from "react-router-dom";
+import { getComplexImageUrl } from "../../utils/imageHelper";
 
 export default function ComplexCard({ complex }) {
   // Format địa chỉ
@@ -17,8 +18,7 @@ export default function ComplexCard({ complex }) {
   };
 
   // Placeholder image nếu không có ảnh
-  const imageUrl =
-    complex.imageUrl || "https://placehold.co/348x192?text=San+Bong";
+  const imageUrl = getComplexImageUrl(complex.imageUrl) || "https://placehold.co/348x192?text=San+Bong";
 
   return (
     <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4 flex flex-col gap-4 h-full">

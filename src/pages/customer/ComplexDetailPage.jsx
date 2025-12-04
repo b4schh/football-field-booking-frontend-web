@@ -1,4 +1,5 @@
 import { useParams } from "react-router-dom";
+import { getComplexImageUrl } from "../../utils/imageHelper";
 import { useEffect } from "react";
 import { FiMapPin } from "react-icons/fi";
 import { FaStar } from "react-icons/fa";
@@ -110,7 +111,7 @@ export default function ComplexDetailPage() {
   // Tạo danh sách ảnh từ API hoặc dùng placeholder
   const images =
     currentComplex.images?.length > 0
-      ? currentComplex.images.map((img) => img.imageUrl)
+      ? currentComplex.images.map((img) => getComplexImageUrl(img.imageUrl))
       : [
           "/src/assets/img/complex-placeholder-image.jpg",
           "/src/assets/img/complex-placeholder-image.jpg",

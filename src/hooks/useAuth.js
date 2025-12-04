@@ -4,7 +4,7 @@ import useAuthStore from "../store/authStore";
 
 /**
  * Custom hook để quản lý authentication
- * Tự động check token và redirect nếu cần
+ * Tự động check token và refresh nếu cần
  */
 export const useAuth = (requireAuth = false) => {
   const navigate = useNavigate();
@@ -12,11 +12,16 @@ export const useAuth = (requireAuth = false) => {
 
   useEffect(() => {
     if (requireAuth) {
-      const isValid = checkAuth();
-      if (!isValid) {
-        logout();
-        navigate("/login");
-      }
+      // Async function để check auth
+      const verifyAuth = async () => {
+        const isValid = await checkAuth();
+        if (!isValid) {
+          logout();
+          navigate("/");
+        }
+      };
+      
+      verifyAuth();
     }
   }, [requireAuth, checkAuth, logout, navigate]);
 

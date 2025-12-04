@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FiCalendar, FiClock, FiMapPin, FiDollarSign, FiAlertCircle } from "react-icons/fi";
 import useBookingDraftStore from "../../store/bookingDraftStore";
 import useBookingStore from "../../store/bookingStore";
@@ -12,12 +12,22 @@ export default function BookingConfirmation() {
   const { createBooking, isLoading } = useBookingStore();
   
   const [note, setNote] = useState("");
+  const [isNavigating, setIsNavigating] = useState(false);
 
-  // Nếu không có draft, redirect về trang chủ
+  // Nếu không có draft, redirect về trang chủ (use useEffect to avoid render issue)
+  useEffect(() => {
+    // Don't redirect if we're in the middle of navigating to payment page
+    if (!isNavigating && !selectedSlot && !selectedField && !selectedDate) {
+      navigate("/", { replace: true });
+    }
+  }, [selectedSlot, selectedField, selectedDate, navigate, isNavigating]);
+
+  // Early return if no draft data (but not during navigation)
   if (!selectedSlot || !selectedField || !selectedDate) {
-    navigate("/");
     return null;
   }
+
+  const depositAmount = selectedSlot.price * 0.3; // 30% deposit
 
   const formatTime = (timeString) => {
     if (!timeString) return "";
@@ -68,30 +78,40 @@ export default function BookingConfirmation() {
     const result = await createBooking(bookingData);
     
     console.log('📥 Create Booking Result:', result);
+    console.log('📥 Result Data:', result?.data);
+    console.log('📥 Full Result Structure:', JSON.stringify(result, null, 2));
     
-    if (result.success) {
-      // Store now returns: { success: true, data: BookingDto }
+    if (result && result.success) {
+      // Store should return: { success: true, data: BookingDto }
       const bookingId = result.data?.id;
       
       console.log('🎫 Booking ID:', bookingId);
+      console.log('🎫 Booking Data:', result.data);
       
       if (bookingId) {
         toast.success("Tạo booking thành công! Đang chuyển sang trang thanh toán...");
-        // Navigate first, then clear (to avoid re-render triggering the redirect)
+        // Set navigating flag to prevent useEffect redirect
+        setIsNavigating(true);
+        // Navigate immediately without clearing draft to avoid component re-render
         navigate(`/booking/${bookingId}/payment`, { replace: true });
-        clearBookingDraft();
+        // Clear draft after a small delay (component will be unmounted by then)
+        setTimeout(() => {
+          clearBookingDraft();
+        }, 200);
       } else {
         console.error('❌ Booking ID not found in response:', result);
-        toast.success("Tạo booking thành công!");
+        toast.error("Tạo booking thành công nhưng không nhận được mã booking. Vui lòng kiểm tra danh sách booking.");
+        setIsNavigating(true);
         navigate("/my-bookings", { replace: true });
-        clearBookingDraft();
+        setTimeout(() => {
+          clearBookingDraft();
+        }, 200);
       }
     } else {
-      toast.error(result.error || "Không thể tạo booking. Vui lòng thử lại.");
+      console.error('❌ Create booking failed:', result);
+      toast.error(result?.error || "Không thể tạo booking. Vui lòng thử lại.");
     }
   };
-
-  const depositAmount = selectedSlot.price * 0.3; // 30% deposit
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">

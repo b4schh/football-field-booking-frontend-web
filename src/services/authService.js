@@ -9,7 +9,7 @@ export const authService = {
   /**
    * Đăng nhập
    * @param {Object} credentials - { username, password } hoặc { email, password }
-   * @returns {Promise} Response chứa token và user info
+   * @returns {Promise} Response chứa token, refreshToken và user info
    */
   login: async (credentials) => {
     const response = await api.post("/auth/login", credentials);
@@ -19,10 +19,20 @@ export const authService = {
   /**
    * Đăng ký tài khoản mới
    * @param {Object} userData - Thông tin đăng ký
-   * @returns {Promise} Response chứa token và user info
+   * @returns {Promise} Response chứa token, refreshToken và user info
    */
   register: async (userData) => {
     const response = await api.post("/auth/register", userData);
+    return response.data;
+  },
+
+  /**
+   * Làm mới access token bằng refresh token
+   * @param {string} refreshToken - Refresh token
+   * @returns {Promise} Response chứa token mới và refreshToken mới
+   */
+  refreshToken: async (refreshToken) => {
+    const response = await api.post("/auth/refresh-token", { refreshToken });
     return response.data;
   },
 
