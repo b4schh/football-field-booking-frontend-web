@@ -78,6 +78,16 @@ export const getMyReviews = async () => {
 };
 
 /**
+ * Lấy review của user cho một booking cụ thể
+ * @param {number} bookingId - ID của booking
+ * @returns {Promise} Response chứa thông tin review (hoặc null nếu chưa review)
+ */
+export const getReviewByBookingId = async (bookingId) => {
+  const response = await api.get(`/reviews/booking/${bookingId}`);
+  return response.data.data;
+};
+
+/**
  * Tạo review mới
  * @param {FormData} formData - Form data chứa thông tin review (rating, comment, images, fieldId)
  * @returns {Promise} Response chứa thông tin review vừa tạo
@@ -140,6 +150,7 @@ export default {
   getFieldAverageRating,
   getReviewById,
   getMyReviews,
+  getReviewByBookingId,
   createReview,
   updateReview,
   deleteReview,

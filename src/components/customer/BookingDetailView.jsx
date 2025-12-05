@@ -1,7 +1,10 @@
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiCheckCircle, FiXCircle, FiAlertCircle, FiClock, FiImage, FiFileText } from "react-icons/fi";
+import { FiCheckCircle, FiXCircle, FiAlertCircle, FiClock, FiImage, FiFileText, FiStar, FiEdit } from "react-icons/fi";
 import BookingInfoCard from "./BookingInfoCard";
+import ReviewForm from "./ReviewForm";
 import { getPaymentProofUrl } from "../../utils/imageHelper";
+import { getReviewByBookingId } from "../../services/reviewService";
 
 const BOOKING_STATUS = {
   0: { label: "Chờ upload bill", color: "bg-yellow-100 text-yellow-800 border-yellow-300", icon: FiClock },
@@ -18,6 +21,31 @@ export default function BookingDetailView({ booking }) {
   const navigate = useNavigate();
   const status = BOOKING_STATUS[booking.bookingStatus] || BOOKING_STATUS[0];
   const StatusIcon = status.icon;
+  
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [userReview, setUserReview] = useState(null);
+  const [loadingReview, setLoadingReview] = useState(false);
+
+  // Check if user has already reviewed this booking
+  useEffect(() => {
+    const fetchUserReview = async () => {
+      if (booking.bookingStatus === 5) { // Only for completed bookings
+        setLoadingReview(true);
+        try {
+          const review = await getReviewByBookingId(booking.id);
+          console.log(`[BookingDetailView] Review check for booking ${booking.id}:`, review ? 'Found' : 'Not found');
+          setUserReview(review);
+        } catch (error) {
+          console.error("Failed to load user review:", error);
+          setUserReview(null);
+        } finally {
+          setLoadingReview(false);
+        }
+      }
+    };
+
+    fetchUserReview();
+  }, [booking.id, booking.bookingStatus]);
 
   const formatDateTime = (dateString) => {
     const date = new Date(dateString);
@@ -102,6 +130,16 @@ export default function BookingDetailView({ booking }) {
 
   const statusMessage = getStatusMessage();
 
+  const handleReviewSuccess = async () => {
+    // Reload user review after successful submission
+    try {
+      const review = await getReviewByBookingId(booking.id);
+      setUserReview(review);
+    } catch (error) {
+      console.error("Failed to reload user review:", error);
+    }
+  };
+
   return (
     <>
       {/* Status Header */}
@@ -160,6 +198,66 @@ export default function BookingDetailView({ booking }) {
                       <div className="text-gray-900">{booking.paymentNote}</div>
                     </div>
                   </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* User Review Display - Show full review if exists */}
+          {booking.bookingStatus === 5 && userReview && (
+            <div className="bg-white rounded-xl p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-gray-900">Đánh giá của bạn</h2>
+                <button
+                  onClick={() => setShowReviewForm(true)}
+                  className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 font-semibold"
+                >
+                  <FiEdit size={16} />
+                  Chỉnh sửa
+                </button>
+              </div>
+
+              {/* Rating */}
+              <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <FiStar
+                      key={star}
+                      size={20}
+                      className={star <= userReview.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}
+                    />
+                  ))}
+                </div>
+                <span className="font-semibold text-gray-900">{userReview.rating}/5</span>
+                <span className="text-sm text-gray-500">
+                  • {new Date(userReview.createdAt).toLocaleDateString('vi-VN')}
+                </span>
+              </div>
+
+              {/* Comment */}
+              <p className="text-gray-700 mb-4 whitespace-pre-wrap">{userReview.comment}</p>
+
+              {/* Images */}
+              {userReview.images && userReview.images.length > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                  {userReview.images.map((imageUrl, index) => (
+                    <img
+                      key={index}
+                      src={imageUrl}
+                      alt={`Review ${index + 1}`}
+                      className="w-full h-24 object-cover rounded-lg border border-gray-200 hover:opacity-90 transition-opacity cursor-pointer"
+                      onClick={() => window.open(imageUrl, '_blank')}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* Helpful Votes */}
+              {userReview.helpfulCount > 0 && (
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <p className="text-sm text-gray-600">
+                    👍 {userReview.helpfulCount} người thấy đánh giá này hữu ích
+                  </p>
                 </div>
               )}
             </div>
@@ -249,9 +347,30 @@ export default function BookingDetailView({ booking }) {
                 Đặt sân khác
               </button>
             )}
+
+            {/* Review Button - Only for completed bookings */}
+            {booking.bookingStatus === 5 && !loadingReview && !userReview && (
+              <button
+                onClick={() => setShowReviewForm(true)}
+                className="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-6 rounded-lg transition flex items-center justify-center gap-2"
+              >
+                <FiStar size={20} />
+                Viết đánh giá
+              </button>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Review Form Modal */}
+      {showReviewForm && (
+        <ReviewForm
+          booking={booking}
+          existingReview={userReview}
+          onClose={() => setShowReviewForm(false)}
+          onSuccess={handleReviewSuccess}
+        />
+      )}
     </>
   );
 }

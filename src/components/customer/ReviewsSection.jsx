@@ -43,15 +43,42 @@ function ReviewCard({ review, onVoteHelpful, onUnvoteHelpful, isVoted }) {
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffTime = Math.abs(now - date);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const diffTime = now - date;
+    const diffMinutes = Math.floor(diffTime / (1000 * 60));
+    const diffHours = Math.floor(diffTime / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
     
-    if (diffDays === 0) return "Hôm nay";
-    if (diffDays === 1) return "Hôm qua";
-    if (diffDays < 7) return `${diffDays} ngày trước`;
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)} tuần trước`;
-    return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    // Chưa quá 1 giờ: Hiện số phút
+    if (diffMinutes < 60) {
+      if (diffMinutes < 1) return "Vừa xong";
+      return `${diffMinutes} phút trước`;
+    }
+    
+    // Chưa quá 1 ngày: Hiện số giờ
+    if (diffHours < 24) {
+      return `${diffHours} giờ trước`;
+    }
+    
+    // Chưa quá 1 tuần: Hiện số ngày
+    if (diffDays < 7) {
+      return `${diffDays} ngày trước`;
+    }
+    
+    // Quá 1 tuần: Hiện ngày giờ cụ thể
+    return date.toLocaleString('vi-VN', { 
+      day: '2-digit', 
+      month: '2-digit', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   };
+
+  // Check if review was edited (cho phép sai số 1 giây để tránh false positive do database timestamp)
+  const createdTime = new Date(review.createdAt).getTime();
+  const updatedTime = new Date(review.updatedAt).getTime();
+  const isEdited = review.updatedAt && (updatedTime - createdTime > 1000); // > 1 giây mới tính là đã sửa
+  const displayDate = isEdited ? review.updatedAt : review.createdAt;
 
   const displayImages = showAllImages ? review.images : review.images.slice(0, 3);
   const remainingImages = review.images.length - 3;
@@ -77,7 +104,9 @@ function ReviewCard({ review, onVoteHelpful, onUnvoteHelpful, isVoted }) {
               <h4 className="font-semibold text-gray-900">{review.user.name}</h4>
               <p className="text-xs text-gray-500">{review.user.role}</p>
             </div>
-            <span className="text-xs text-gray-400">{formatDate(review.createdAt)}</span>
+            <span className="text-xs text-gray-400">
+              {isEdited ? `Lần cuối chỉnh sửa ${formatDate(displayDate)}` : formatDate(displayDate)}
+            </span>
           </div>
 
           {/* Rating */}

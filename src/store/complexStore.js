@@ -10,6 +10,7 @@ const useComplexStore = create((set, get) => ({
   isLoading: false,
   isAvailabilityLoading: false,
   error: null,
+  currentSearchParams: null, // Store current search params for pagination
   pagination: {
     pageIndex: 1,
     pageSize: 10,
@@ -24,7 +25,24 @@ const useComplexStore = create((set, get) => ({
     set({ isLoading: true, error: null });
 
     try {
-      const response = await complexService.getComplexes(params);
+      // If there are current search params and no new search-specific params provided,
+      // use search endpoint with pagination
+      const state = get();
+      let response;
+      
+      if (state.currentSearchParams && !params.name && !params.province) {
+        // Continue with search using stored params + new pagination
+        const searchParams = {
+          ...state.currentSearchParams,
+          pageIndex: params.pageIndex || 1,
+          pageSize: params.pageSize || 12,
+        };
+        response = await complexService.searchComplexes(searchParams);
+      } else {
+        // Regular fetch without search
+        response = await complexService.getComplexes(params);
+        set({ currentSearchParams: null }); // Clear search params
+      }
 
       set({
         complexes: response.data ?? [],
@@ -139,8 +157,12 @@ const useComplexStore = create((set, get) => ({
     try {
       const response = await complexService.searchComplexes(searchParams);
 
+      // Store search params for pagination
+      const { pageIndex, pageSize, ...filterParams } = searchParams;
+      
       set({
         complexes: response.data || [],
+        currentSearchParams: filterParams, // Store filter params (without pagination)
         pagination: {
           pageIndex: response.pageIndex || 1,
           pageSize: response.pageSize || 10,
@@ -268,6 +290,7 @@ const useComplexStore = create((set, get) => ({
   clearError: () => set({ error: null }),
   clearCurrentComplex: () => set({ currentComplex: null }),
   clearAvailabilityData: () => set({ availabilityData: null }),
+  clearSearchParams: () => set({ currentSearchParams: null }),
 }));
 
 export default useComplexStore;

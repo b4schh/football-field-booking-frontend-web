@@ -8,13 +8,15 @@ export default function ComplexListGrid() {
     useComplexStore();
 
   useEffect(() => {
-    fetchComplexes({ pageIndex: 1, pageSize: 12 });
+    // Only fetch on initial mount if no complexes exist
+    if (complexes.length === 0) {
+      fetchComplexes({ pageIndex: 1, pageSize: 12 });
+    }
   }, []);
-
 
   const handlePageChange = (newPage) => {
     console.log("📄 Page changed to:", newPage);
-    fetchComplexes({ pageIndex: newPage, pageSize: 1 });
+    fetchComplexes({ pageIndex: newPage, pageSize: 12 });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 

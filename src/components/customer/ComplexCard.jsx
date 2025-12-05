@@ -18,7 +18,7 @@ export default function ComplexCard({ complex }) {
   };
 
   // Placeholder image nếu không có ảnh
-  const imageUrl = getComplexImageUrl(complex.imageUrl) || "https://placehold.co/348x192?text=San+Bong";
+  const imageUrl = getComplexImageUrl(complex.mainImageUrl) || "https://placehold.co/348x192?text=San+Bong";
 
   return (
     <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4 flex flex-col gap-4 h-full">
