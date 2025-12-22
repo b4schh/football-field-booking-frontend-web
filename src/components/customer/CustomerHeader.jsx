@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuthStore, useAuthModalStore } from "../../store";
 import UserMenu from "./UserMenu";
 import AuthModal from "./AuthModal";
+import NotificationDropdown from "./NotificationDropdown";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -38,9 +39,14 @@ export default function Header() {
 
           {/* Buttons */}
           <div className="flex items-center gap-3">
-            <button className="bg-white p-2 rounded-full shadow-md hover:bg-gray-50 transition">
-              <HiOutlineBell size={18} className="text-[#10243A]" />
-            </button>
+            {/* Notification button - chỉ hiện khi đã login */}
+            {isAuthenticated ? (
+              <NotificationDropdown />
+            ) : (
+              <button className="bg-white p-2 rounded-full shadow-md hover:bg-gray-50 transition opacity-50 cursor-not-allowed">
+                <HiOutlineBell size={18} className="text-[#10243A]" />
+              </button>
+            )}
 
             {/* User button/menu */}
             {isAuthenticated ? (

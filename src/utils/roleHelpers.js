@@ -98,9 +98,9 @@ export const getRoleRedirectPath = (user) => {
   
   switch (primaryRole) {
     case ROLES.ADMIN:
-      return '/admin';
+      return '/admin/dashboard';
     case ROLES.OWNER:
-      return '/owner';
+      return '/owner/dashboard';
     case ROLES.CUSTOMER:
     default:
       return '/';

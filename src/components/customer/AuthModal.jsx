@@ -1,13 +1,16 @@
 import { useState } from "react";
 import { IoClose } from "react-icons/io5";
 import { FiMail, FiLock, FiUser, FiPhone } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store";
+import { getRoleRedirectPath } from "../../utils/roleHelpers";
 
 export default function AuthModal({ isOpen, onClose, onSuccess }) {
   const [mode, setMode] = useState("login"); // "login" or "register"
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    confirmPassword: "",
     firstName: "",
     lastName: "",
     phone: "",
@@ -17,12 +20,14 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const { login, register } = useAuthStore();
+  const navigate = useNavigate();
 
   // Reset form khi đóng modal
   const handleClose = () => {
     setFormData({
       email: "",
       password: "",
+      confirmPassword: "",
       firstName: "",
       lastName: "",
       phone: "",
@@ -61,6 +66,11 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
       } else if (!/^[0-9]{10,11}$/.test(formData.phone)) {
         newErrors.phone = "Số điện thoại không hợp lệ";
       }
+      if (!formData.confirmPassword) {
+        newErrors.confirmPassword = "Vui lòng xác nhận mật khẩu";
+      } else if (formData.password !== formData.confirmPassword) {
+        newErrors.confirmPassword = "Mật khẩu xác nhận không khớp";
+      }
     }
 
     setErrors(newErrors);
@@ -90,6 +100,14 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
 
       if (result.success) {
         handleClose();
+        
+        // Auto-redirect dựa trên role sau khi login/register thành công
+        const user = result.user;
+        if (user) {
+          const redirectPath = getRoleRedirectPath(user);
+          navigate(redirectPath);
+        }
+        
         if (onSuccess) {
           onSuccess();
         }
@@ -271,6 +289,35 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
               <p className="mt-1 text-sm text-red-600">{errors.password}</p>
             )}
           </div>
+
+          {/* Confirm Password - Only for register */}
+          {mode === "register" && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Xác nhận mật khẩu
+              </label>
+              <div className="relative">
+                <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="password"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 transition ${
+                    errors.confirmPassword
+                      ? "border-red-500 focus:ring-red-200"
+                      : "border-gray-300 focus:ring-blue-200"
+                  }`}
+                  placeholder="••••••••"
+                />
+              </div>
+              {errors.confirmPassword && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.confirmPassword}
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Submit error */}
           {errors.submit && (

@@ -40,6 +40,16 @@ export const complexImageService = {
     const response = await api.delete(`/complex-images/${imageId}`);
     return response.data;
   },
+
+  /**
+   * Đặt ảnh làm ảnh chính của cụm sân
+   * @param {string|number} imageId - Image ID
+   * @returns {Promise} Response
+   */
+  setMainImage: async (imageId) => {
+    const response = await api.put(`/complex-images/${imageId}/set-main`);
+    return response.data;
+  },
 };
 
 export default complexImageService;

@@ -56,7 +56,19 @@ api.interceptors.response.use(
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         localStorage.removeItem("auth-storage");
+        
+        // Stop token monitor
+        if (typeof window !== 'undefined' && window.tokenMonitor) {
+          window.tokenMonitor.stop();
+        }
+        
         window.location.href = "/";
+        return Promise.reject(error);
+      }
+
+      // Don't retry for SSE endpoints - SSE handles its own retry logic
+      if (originalRequest.url?.includes('/sse/stream')) {
+        console.log('SSE 401 - Will be handled by SSE reconnect logic');
         return Promise.reject(error);
       }
 
@@ -81,6 +93,12 @@ api.interceptors.response.use(
       const authStorage = localStorage.getItem("auth-storage");
       if (!authStorage) {
         isRefreshing = false;
+        
+        // Stop token monitor
+        if (typeof window !== 'undefined' && window.tokenMonitor) {
+          window.tokenMonitor.stop();
+        }
+        
         window.location.href = "/";
         return Promise.reject(error);
       }
@@ -92,6 +110,8 @@ api.interceptors.response.use(
         if (!refreshToken) {
           throw new Error('No refresh token available');
         }
+
+        console.log('🔄 Auto-refreshing token...');
 
         // Gọi API refresh token
         const response = await axios.post(
@@ -123,6 +143,8 @@ api.interceptors.response.use(
         processQueue(null, newToken);
         isRefreshing = false;
 
+        console.log('✅ Token auto-refreshed successfully');
+
         // Retry original request
         return api(originalRequest);
 
@@ -130,10 +152,18 @@ api.interceptors.response.use(
         processQueue(refreshError, null);
         isRefreshing = false;
         
+        console.error('❌ Auto-refresh failed:', refreshError);
+        
         // Refresh failed, logout
         localStorage.removeItem("token");
         localStorage.removeItem("user");
         localStorage.removeItem("auth-storage");
+        
+        // Stop token monitor
+        if (typeof window !== 'undefined' && window.tokenMonitor) {
+          window.tokenMonitor.stop();
+        }
+        
         window.location.href = "/";
         
         return Promise.reject(refreshError);

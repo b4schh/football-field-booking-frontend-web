@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { FiUser, FiLogOut, FiSettings, FiHeart } from "react-icons/fi";
 import { HiOutlineClipboardList } from "react-icons/hi";
+import { MdDashboard } from "react-icons/md";
 import { useAuthStore } from "../../store";
 import { useNavigate } from "react-router-dom";
+import { getRoleRedirectPath, ROLES } from "../../utils/roleHelpers";
 
 export default function UserMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -30,7 +32,20 @@ export default function UserMenu() {
     navigate("/");
   };
 
+  // Check nếu user là Admin hoặc Owner thì hiển thị Dashboard link
+  const showDashboard = user?.roles && (user.roles.includes(ROLES.ADMIN) || user.roles.includes(ROLES.OWNER));
+  const dashboardPath = showDashboard ? getRoleRedirectPath(user) : null;
+
   const menuItems = [
+    // Dashboard menu item (chỉ hiển thị cho Admin/Owner)
+    ...(showDashboard ? [{
+      icon: MdDashboard,
+      label: "Dashboard",
+      onClick: () => {
+        navigate(dashboardPath);
+        setIsOpen(false);
+      },
+    }] : []),
     {
       icon: FiUser,
       label: "Thông tin cá nhân",

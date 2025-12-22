@@ -1,0 +1,610 @@
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { FaArrowLeft, FaArrowRight, FaCheck, FaTimes } from 'react-icons/fa';
+import api from '../../services/api';
+import useLocationStore from '../../store/locationStore';
+
+const FIELD_TYPE_OPTIONS = [
+  { value: 'Sân 5 người', label: 'Sân 5 người' },
+  { value: 'Sân 7 người', label: 'Sân 7 người' },
+  { value: 'Sân 11 người', label: 'Sân 11 người' }
+];
+
+const TIMESLOT_PRESETS = {
+  all_day: {
+    name: 'Cả ngày (8 khung giờ)',
+    slots: [
+      { startTime: '06:00:00', endTime: '08:00:00', price: 200000 },
+      { startTime: '08:00:00', endTime: '10:00:00', price: 200000 },
+      { startTime: '10:00:00', endTime: '12:00:00', price: 250000 },
+      { startTime: '12:00:00', endTime: '14:00:00', price: 250000 },
+      { startTime: '14:00:00', endTime: '16:00:00', price: 200000 },
+      { startTime: '16:00:00', endTime: '18:00:00', price: 250000 },
+      { startTime: '18:00:00', endTime: '20:00:00', price: 300000 },
+      { startTime: '20:00:00', endTime: '22:00:00', price: 300000 }
+    ]
+  },
+  evening: {
+    name: 'Buổi tối (4 khung giờ)',
+    slots: [
+      { startTime: '16:00:00', endTime: '18:00:00', price: 250000 },
+      { startTime: '18:00:00', endTime: '20:00:00', price: 300000 },
+      { startTime: '20:00:00', endTime: '22:00:00', price: 300000 },
+      { startTime: '22:00:00', endTime: '00:00:00', price: 250000 }
+    ]
+  },
+  weekend: {
+    name: 'Cuối tuần (12 khung giờ)',
+    slots: [
+      { startTime: '06:00:00', endTime: '08:00:00', price: 250000 },
+      { startTime: '08:00:00', endTime: '10:00:00', price: 250000 },
+      { startTime: '10:00:00', endTime: '12:00:00', price: 300000 },
+      { startTime: '12:00:00', endTime: '14:00:00', price: 300000 },
+      { startTime: '14:00:00', endTime: '16:00:00', price: 250000 },
+      { startTime: '16:00:00', endTime: '18:00:00', price: 300000 },
+      { startTime: '18:00:00', endTime: '20:00:00', price: 350000 },
+      { startTime: '20:00:00', endTime: '22:00:00', price: 350000 },
+      { startTime: '22:00:00', endTime: '00:00:00', price: 300000 },
+      { startTime: '00:00:00', endTime: '02:00:00', price: 250000 },
+      { startTime: '02:00:00', endTime: '04:00:00', price: 200000 },
+      { startTime: '04:00:00', endTime: '06:00:00', price: 200000 }
+    ]
+  }
+};
+
+const ComplexSetupWizard = () => {
+  const navigate = useNavigate();
+  const [currentStep, setCurrentStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Step 1: Complex Info
+  const [complexData, setComplexData] = useState({
+    name: '',
+    address: '',
+    provinceId: '',
+    wardId: '',
+    phoneNumber: '',
+    openingTime: '06:00',
+    closingTime: '23:00',
+    description: ''
+  });
+
+  // Step 2: Fields Setup
+  const [fieldsData, setFieldsData] = useState({
+    fieldCount: 1,
+    namePattern: 'Sân {number}',
+    fieldType: 'Sân 5',
+    description: ''
+  });
+
+  // Step 3: TimeSlot Template
+  const [timeslotData, setTimeslotData] = useState({
+    preset: 'all_day',
+    customSlots: [],
+    applyToAll: true
+  });
+
+  const { 
+    provinces, 
+    fetchProvinces, 
+    fetchWardsByProvince, 
+    isLoadingProvinces,
+    isLoadingWards 
+  } = useLocationStore();
+  const [wards, setWards] = useState([]);
+
+  // Load provinces on mount (will use cache if available)
+  useEffect(() => {
+    fetchProvinces();
+  }, [fetchProvinces]);
+
+  // Load wards when province changes (with cache)
+  const handleProvinceChange = async (e) => {
+    const provinceCode = e.target.value;
+    setComplexData({ ...complexData, provinceId: provinceCode, wardId: '' });
+    setWards([]);
+    
+    if (provinceCode) {
+      const wardOptions = await fetchWardsByProvince(provinceCode);
+      setWards(wardOptions);
+    }
+  };
+
+  const generateFieldsList = () => {
+    const fields = [];
+    for (let i = 1; i <= fieldsData.fieldCount; i++) {
+      const name = fieldsData.namePattern.replace('{number}', i);
+      fields.push({
+        name,
+        fieldType: fieldsData.fieldType,
+        description: fieldsData.description
+      });
+    }
+    return fields;
+  };
+
+  const getSelectedTimeSlots = () => {
+    if (timeslotData.preset && TIMESLOT_PRESETS[timeslotData.preset]) {
+      return TIMESLOT_PRESETS[timeslotData.preset].slots;
+    }
+    return timeslotData.customSlots;
+  };
+
+  const handleSubmit = async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const fields = generateFieldsList();
+      const timeSlots = getSelectedTimeSlots();
+
+      const payload = {
+        complex: {
+          name: complexData.name,
+          address: complexData.address,
+          provinceId: parseInt(complexData.provinceId),
+          wardId: parseInt(complexData.wardId),
+          phoneNumber: complexData.phoneNumber,
+          openingTime: `${complexData.openingTime}:00`,
+          closingTime: `${complexData.closingTime}:00`,
+          description: complexData.description
+        },
+        fields: fields,
+        timeSlotTemplate: {
+          timeSlots: timeSlots
+        },
+        applyTemplateToAllFields: timeslotData.applyToAll
+      };
+
+      const response = await api.post('/complexes/owner/bulk-setup', payload);
+
+      if (response.data?.isSuccess) {
+        alert('Tạo cụm sân thành công!');
+        navigate('/owner/complexes');
+      } else {
+        throw new Error(response.data?.message || 'Có lỗi xảy ra');
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || err.message || 'Có lỗi xảy ra');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const canGoNext = () => {
+    if (currentStep === 1) {
+      return complexData.name && complexData.address && complexData.provinceId && complexData.wardId;
+    }
+    if (currentStep === 2) {
+      return fieldsData.fieldCount > 0 && fieldsData.namePattern;
+    }
+    if (currentStep === 3) {
+      return timeslotData.preset || timeslotData.customSlots.length > 0;
+    }
+    return true;
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Tạo cụm sân nhanh</h1>
+          <p className="text-gray-600">Tạo cụm sân với nhiều sân con và khung giờ chỉ trong 4 bước</p>
+        </div>
+
+        {/* Progress Steps */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            {[1, 2, 3, 4].map((step) => (
+              <div key={step} className="flex-1 flex items-center">
+                <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 
+                  ${currentStep === step ? 'bg-blue-600 border-blue-600 text-white' : 
+                    currentStep > step ? 'bg-green-600 border-green-600 text-white' : 
+                    'bg-white border-gray-300 text-gray-400'}`}>
+                  {currentStep > step ? <FaCheck /> : step}
+                </div>
+                {step < 4 && (
+                  <div className={`flex-1 h-1 mx-2 ${currentStep > step ? 'bg-green-600' : 'bg-gray-300'}`} />
+                )}
+              </div>
+            ))}
+          </div>
+          <div className="flex justify-between mt-2">
+            <span className="text-sm text-gray-600">Thông tin cụm sân</span>
+            <span className="text-sm text-gray-600">Thiết lập sân</span>
+            <span className="text-sm text-gray-600">Khung giờ</span>
+            <span className="text-sm text-gray-600">Xác nhận</span>
+          </div>
+        </div>
+
+        {/* Error Message */}
+        {error && (
+          <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-2">
+            <FaTimes className="text-red-600" />
+            <span className="text-red-800">{error}</span>
+          </div>
+        )}
+
+        {/* Step Content */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+          {/* Step 1: Complex Info */}
+          {currentStep === 1 && (
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold mb-4">Thông tin cụm sân</h2>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tên cụm sân <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={complexData.name}
+                  onChange={(e) => setComplexData({ ...complexData, name: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="Ví dụ: Sân bóng Thể Thao XYZ"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Địa chỉ <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={complexData.address}
+                  onChange={(e) => setComplexData({ ...complexData, address: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="Số nhà, tên đường"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tỉnh/Thành phố <span className="text-red-600">*</span>
+                  </label>
+                  <select
+                    value={complexData.provinceId}
+                    onChange={handleProvinceChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    disabled={isLoadingProvinces}
+                  >
+                    <option value="">{isLoadingProvinces ? "Đang tải..." : "-- Chọn tỉnh/thành phố --"}</option>
+                    {provinces.map((province) => (
+                      <option key={province.code} value={province.code}>
+                        {province.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Quận/Huyện <span className="text-red-600">*</span>
+                  </label>
+                  <select
+                    value={complexData.wardId}
+                    onChange={(e) => setComplexData({ ...complexData, wardId: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                    disabled={!complexData.provinceId || isLoadingWards}
+                  >
+                    <option value="">{isLoadingWards ? "Đang tải..." : "-- Chọn quận/huyện --"}</option>
+                    {wards.map((ward) => (
+                      <option key={ward.code} value={ward.code}>
+                        {ward.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Số điện thoại
+                </label>
+                <input
+                  type="tel"
+                  value={complexData.phoneNumber}
+                  onChange={(e) => setComplexData({ ...complexData, phoneNumber: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="0901234567"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Giờ mở cửa
+                  </label>
+                  <input
+                    type="time"
+                    value={complexData.openingTime}
+                    onChange={(e) => setComplexData({ ...complexData, openingTime: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Giờ đóng cửa
+                  </label>
+                  <input
+                    type="time"
+                    value={complexData.closingTime}
+                    onChange={(e) => setComplexData({ ...complexData, closingTime: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Mô tả
+                </label>
+                <textarea
+                  value={complexData.description}
+                  onChange={(e) => setComplexData({ ...complexData, description: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  rows={3}
+                  placeholder="Mô tả về cụm sân của bạn..."
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Step 2: Fields Setup */}
+          {currentStep === 2 && (
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold mb-4">Thiết lập sân</h2>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Số lượng sân <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="number"
+                  min="1"
+                  max="50"
+                  value={fieldsData.fieldCount}
+                  onChange={(e) => setFieldsData({ ...fieldsData, fieldCount: parseInt(e.target.value) || 1 })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                />
+                <p className="text-sm text-gray-500 mt-1">Từ 1 đến 50 sân</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Mẫu tên sân <span className="text-red-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={fieldsData.namePattern}
+                  onChange={(e) => setFieldsData({ ...fieldsData, namePattern: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="Sân {number}"
+                />
+                <p className="text-sm text-gray-500 mt-1">
+                  Dùng {'{number}'} để đánh số tự động. Ví dụ: "Sân {'{number}'}" → Sân 1, Sân 2, Sân 3...
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Loại sân
+                </label>
+                <select
+                  value={fieldsData.fieldType}
+                  onChange={(e) => setFieldsData({ ...fieldsData, fieldType: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  {FIELD_TYPE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Mô tả chung cho tất cả sân
+                </label>
+                <textarea
+                  value={fieldsData.description}
+                  onChange={(e) => setFieldsData({ ...fieldsData, description: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  rows={2}
+                  placeholder="Mô tả áp dụng cho tất cả các sân..."
+                />
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h3 className="font-semibold text-blue-900 mb-2">Xem trước</h3>
+                <div className="space-y-1">
+                  {generateFieldsList().slice(0, 5).map((field, index) => (
+                    <div key={index} className="text-sm text-blue-800">
+                      {field.name} - {field.fieldType}
+                    </div>
+                  ))}
+                  {fieldsData.fieldCount > 5 && (
+                    <div className="text-sm text-blue-600 italic">
+                      ... và {fieldsData.fieldCount - 5} sân khác
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: TimeSlot Template */}
+          {currentStep === 3 && (
+            <div className="space-y-4">
+              <h2 className="text-xl font-semibold mb-4">Thiết lập khung giờ</h2>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Chọn mẫu khung giờ có sẵn
+                </label>
+                <div className="space-y-2">
+                  {Object.entries(TIMESLOT_PRESETS).map(([key, preset]) => (
+                    <div
+                      key={key}
+                      className={`border-2 rounded-lg p-4 cursor-pointer transition-colors ${
+                        timeslotData.preset === key
+                          ? 'border-blue-600 bg-blue-50'
+                          : 'border-gray-300 hover:border-blue-300'
+                      }`}
+                      onClick={() => setTimeslotData({ ...timeslotData, preset: key })}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h4 className="font-semibold text-gray-900">{preset.name}</h4>
+                          <p className="text-sm text-gray-600">
+                            {preset.slots.length} khung giờ • {preset.slots[0].startTime} - {preset.slots[preset.slots.length - 1].endTime}
+                          </p>
+                        </div>
+                        {timeslotData.preset === key && (
+                          <FaCheck className="text-blue-600" />
+                        )}
+                      </div>
+                      {timeslotData.preset === key && (
+                        <div className="mt-3 pt-3 border-t border-blue-200">
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            {preset.slots.map((slot, index) => (
+                              <div key={index} className="text-gray-700">
+                                {slot.startTime} - {slot.endTime}: {slot.price.toLocaleString()}đ
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 mt-4">
+                <input
+                  type="checkbox"
+                  id="applyToAll"
+                  checked={timeslotData.applyToAll}
+                  onChange={(e) => setTimeslotData({ ...timeslotData, applyToAll: e.target.checked })}
+                  className="w-4 h-4 text-blue-600"
+                />
+                <label htmlFor="applyToAll" className="text-sm text-gray-700">
+                  Áp dụng khung giờ này cho tất cả các sân
+                </label>
+              </div>
+            </div>
+          )}
+
+          {/* Step 4: Review */}
+          {currentStep === 4 && (
+            <div className="space-y-6">
+              <h2 className="text-xl font-semibold mb-4">Xác nhận thông tin</h2>
+              
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h3 className="font-semibold text-gray-900 mb-2">Thông tin cụm sân</h3>
+                <div className="space-y-1 text-sm text-gray-700">
+                  <div><strong>Tên:</strong> {complexData.name}</div>
+                  <div><strong>Địa chỉ:</strong> {complexData.address}</div>
+                  <div><strong>Giờ hoạt động:</strong> {complexData.openingTime} - {complexData.closingTime}</div>
+                  {complexData.phoneNumber && <div><strong>Điện thoại:</strong> {complexData.phoneNumber}</div>}
+                </div>
+              </div>
+
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h3 className="font-semibold text-gray-900 mb-2">Danh sách sân ({fieldsData.fieldCount} sân)</h3>
+                <div className="space-y-1 text-sm text-gray-700">
+                  {generateFieldsList().slice(0, 10).map((field, index) => (
+                    <div key={index}>{field.name} - {field.fieldType}</div>
+                  ))}
+                  {fieldsData.fieldCount > 10 && (
+                    <div className="text-gray-600 italic">... và {fieldsData.fieldCount - 10} sân khác</div>
+                  )}
+                </div>
+              </div>
+
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h3 className="font-semibold text-gray-900 mb-2">Khung giờ</h3>
+                <div className="text-sm text-gray-700">
+                  <div className="mb-2">
+                    <strong>Mẫu:</strong> {TIMESLOT_PRESETS[timeslotData.preset]?.name}
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {getSelectedTimeSlots().map((slot, index) => (
+                      <div key={index}>
+                        {slot.startTime} - {slot.endTime}: {slot.price.toLocaleString()}đ
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-2 text-blue-600">
+                    {timeslotData.applyToAll 
+                      ? `✓ Áp dụng cho tất cả ${fieldsData.fieldCount} sân`
+                      : '⚠ Chỉ áp dụng cho một số sân'}
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <p className="text-yellow-800 text-sm">
+                  <strong>Lưu ý:</strong> Sau khi tạo, cụm sân sẽ ở trạng thái <strong>Chờ duyệt</strong>. 
+                  Admin sẽ xem xét và phê duyệt trong thời gian sớm nhất.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Navigation Buttons */}
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => currentStep === 1 ? navigate('/owner/complexes') : setCurrentStep(currentStep - 1)}
+            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            disabled={loading}
+          >
+            <FaArrowLeft />
+            {currentStep === 1 ? 'Hủy' : 'Quay lại'}
+          </button>
+
+          <div className="text-sm text-gray-600">
+            Bước {currentStep} / 4
+          </div>
+
+          {currentStep < 4 ? (
+            <button
+              onClick={() => setCurrentStep(currentStep + 1)}
+              disabled={!canGoNext()}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            >
+              Tiếp theo
+              <FaArrowRight />
+            </button>
+          ) : (
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            >
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                  Đang tạo...
+                </>
+              ) : (
+                <>
+                  <FaCheck />
+                  Tạo cụm sân
+                </>
+              )}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default ComplexSetupWizard;

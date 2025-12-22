@@ -1,6 +1,7 @@
 import { Navigate } from "react-router-dom";
 import useAuthStore from "../store/authStore";
-import { hasAnyRole, getRoleRedirectPath } from "../utils/roleHelpers";
+import { hasAnyRole } from "../utils/roleHelpers";
+import Unauthorized from "../pages/Unauthorized";
 
 /**
  * ProtectedRoute Component
@@ -17,7 +18,7 @@ const ProtectedRoute = ({
 }) => {
   const { isAuthenticated, user } = useAuthStore();
 
-  // Kiểm tra đăng nhập
+  // Kiểm tra đăng nhập - redirect về trang chủ nếu chưa login
   if (!isAuthenticated) {
     return <Navigate to={redirectTo} replace />;
   }
@@ -25,9 +26,9 @@ const ProtectedRoute = ({
   // Kiểm tra role nếu có yêu cầu
   if (allowedRoles.length > 0) {
     if (!hasAnyRole(user, allowedRoles)) {
-      // Redirect về trang phù hợp với role của user
-      const userRedirectPath = getRoleRedirectPath(user);
-      return <Navigate to={userRedirectPath} replace />;
+      // Hiển thị trang Unauthorized thay vì redirect
+      const userRole = user?.roles?.[0] || null;
+      return <Unauthorized userRole={userRole} requiredRoles={allowedRoles} />;
     }
   }
 

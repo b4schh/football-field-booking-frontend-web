@@ -237,9 +237,11 @@ const useBookingStore = create((set, get) => ({
   fetchOwnerBookings: async (params = {}) => {
     set({ isLoading: true, error: null });
     try {
-      const data = await bookingService.getOwnerBookings(params);
-      set({ bookings: data, isLoading: false });
-      return { success: true, data };
+      const response = await bookingService.getOwnerBookings(params);
+      // backend returns ApiResponse { success, message, statusCode, data: [...] }
+      const bookings = response?.data || [];
+      set({ bookings: bookings, isLoading: false });
+      return { success: true, data: bookings };
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || "Không thể tải booking của owner";

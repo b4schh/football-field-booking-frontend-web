@@ -3,6 +3,7 @@ import { persist } from "zustand/middleware";
 import { authService } from "../services/authService";
 import { setAuthToken } from "../services/api";
 import { jwtDecode } from "jwt-decode";
+import { tokenMonitor } from "../services/tokenMonitor";
 
 const useAuthStore = create(
   persist(
@@ -50,7 +51,10 @@ const useAuthStore = create(
             error: null,
           });
 
-          return { success: true, data: response.data };
+          // Start token monitoring
+          tokenMonitor.start(() => get(), () => get().refreshAccessToken());
+
+          return { success: true, data: response.data, user: userData };
         } catch (error) {
           const errorMessage =
             error.response?.data?.message || "Đăng nhập thất bại";
@@ -90,11 +94,14 @@ const useAuthStore = create(
               isLoading: false,
               error: null,
             });
+
+            // Start token monitoring
+            tokenMonitor.start(() => get(), () => get().refreshAccessToken());
           } else {
             set({ isLoading: false });
           }
 
-          return { success: true, data: response.data };
+          return { success: true, data: response.data, user };
         } catch (error) {
           const errorMessage =
             error.response?.data?.message || "Đăng ký thất bại";
@@ -104,6 +111,9 @@ const useAuthStore = create(
       },
 
       logout: () => {
+        // Stop token monitoring
+        tokenMonitor.stop();
+        
         setAuthToken(null);
         localStorage.removeItem("token");
         localStorage.removeItem("user");
@@ -125,21 +135,33 @@ const useAuthStore = create(
         
         // Đang refresh rồi thì không refresh nữa
         if (state.isRefreshing) {
-          return false;
+          console.log('⏳ Already refreshing token, waiting...');
+          // Wait for refresh to complete
+          return new Promise((resolve) => {
+            const checkInterval = setInterval(() => {
+              const currentState = get();
+              if (!currentState.isRefreshing) {
+                clearInterval(checkInterval);
+                resolve(currentState.isAuthenticated);
+              }
+            }, 100);
+          });
         }
 
         // Check refresh token còn hạn không
         if (state.refreshTokenExpiresAt && Date.now() >= state.refreshTokenExpiresAt) {
-          console.log('Refresh token đã hết hạn');
+          console.log('❌ Refresh token đã hết hạn');
           get().logout();
           return false;
         }
 
         if (!state.refreshToken) {
+          console.log('❌ No refresh token available');
           return false;
         }
 
         set({ isRefreshing: true });
+        console.log('🔄 Refreshing access token...');
 
         try {
           const response = await authService.refreshToken(state.refreshToken);
@@ -169,9 +191,10 @@ const useAuthStore = create(
             error: null,
           });
 
+          console.log('✅ Token refreshed successfully');
           return true;
         } catch (error) {
-          console.error('Refresh token failed:', error);
+          console.error('❌ Refresh token failed:', error);
           set({ isRefreshing: false });
           get().logout();
           return false;
@@ -198,14 +221,14 @@ const useAuthStore = create(
 
           // Token sắp hết hạn hoặc đã hết hạn, thử refresh
           if (tokenExp <= currentTime + 300) {
-            console.log('Token sắp hết hạn, đang refresh...');
+            console.log('⚠️ Token sắp hết hạn hoặc đã hết hạn, đang refresh...');
             const refreshed = await get().refreshAccessToken();
             return refreshed;
           }
 
           return true;
         } catch (error) {
-          console.error('Check auth error:', error);
+          console.error('❌ Check auth error:', error);
           return false;
         }
       },

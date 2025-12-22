@@ -135,6 +135,15 @@ export const bookingService = {
   },
 
   /**
+   * Kiểm tra khả năng đặt sân (stub - backend may implement `/bookings/check-availability`)
+   * @param {Object} bookingData
+   */
+  checkAvailability: async (bookingData) => {
+    const response = await api.post(`/bookings/check-availability`, bookingData);
+    return response.data;
+  },
+
+  /**
    * Đánh dấu không đến (Owner)
    * @param {string|number} id - Booking ID
    * @returns {Promise} Updated booking

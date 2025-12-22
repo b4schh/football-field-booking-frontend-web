@@ -89,10 +89,11 @@ export const complexService = {
 
   /**
    * Lấy danh sách cụm sân của Owner hiện tại
+   * @param {Object} params - Query parameters (pageIndex, pageSize)
    * @returns {Promise} Owner's complexes
    */
-  getMyComplexes: async () => {
-    const response = await api.get("/complexes/owner/my-complexes");
+  getMyComplexes: async (params = {}) => {
+    const response = await api.get("/complexes/owner/my-complexes", { params });
     return response.data;
   },
 
@@ -112,7 +113,13 @@ export const complexService = {
    * @returns {Promise} Created complex
    */
   createComplex: async (complexData) => {
-    const response = await api.post("/complexes/owner", complexData);
+    // Convert time format HH:mm to HH:mm:ss for TimeSpan
+    const payload = {
+      ...complexData,
+      openingTime: complexData.openingTime ? `${complexData.openingTime}:00` : null,
+      closingTime: complexData.closingTime ? `${complexData.closingTime}:00` : null,
+    };
+    const response = await api.post("/complexes/owner", payload);
     return response.data;
   },
 
@@ -122,7 +129,13 @@ export const complexService = {
    * @returns {Promise} Created complex
    */
   createComplexByAdmin: async (complexData) => {
-    const response = await api.post("/complexes/admin", complexData);
+    // Convert time format HH:mm to HH:mm:ss for TimeSpan
+    const payload = {
+      ...complexData,
+      openingTime: complexData.openingTime ? `${complexData.openingTime}:00` : null,
+      closingTime: complexData.closingTime ? `${complexData.closingTime}:00` : null,
+    };
+    const response = await api.post("/complexes/admin", payload);
     return response.data;
   },
 
@@ -133,7 +146,15 @@ export const complexService = {
    * @returns {Promise} Updated complex
    */
   updateComplex: async (id, complexData) => {
-    const response = await api.put(`/complexes/${id}`, complexData);
+    // Convert time format HH:mm to HH:mm:ss for TimeSpan if present
+    const payload = { ...complexData };
+    if (payload.openingTime && payload.openingTime.length === 5) {
+      payload.openingTime = `${payload.openingTime}:00`;
+    }
+    if (payload.closingTime && payload.closingTime.length === 5) {
+      payload.closingTime = `${payload.closingTime}:00`;
+    }
+    const response = await api.put(`/complexes/${id}`, payload);
     return response.data;
   },
 
@@ -146,6 +167,19 @@ export const complexService = {
     const response = await api.delete(`/complexes/${id}`);
     return response.data;
   },
+
+  /**
+   * Toggle isActive status của Complex (API mới)
+   * @param {string|number} id - Complex ID
+   * @param {boolean} isActive - New isActive status
+   * @returns {Promise} Updated complex
+   */
+  toggleComplexActive: async (id, isActive) => {
+    const response = await api.patch(`/complexes/${id}/toggle-active`, isActive, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    return response.data;
+  },
 };
 
-// export default complexService;
+export default complexService;

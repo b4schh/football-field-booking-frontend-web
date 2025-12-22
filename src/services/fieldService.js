@@ -6,6 +6,18 @@ import api from "./api";
  */
 
 export const fieldService = {
+    /**
+     * Toggle isActive status của Field (API mới)
+     * @param {string|number} id - Field ID
+     * @param {boolean} isActive - New isActive status
+     * @returns {Promise} Updated field
+     */
+    toggleFieldActive: async (id, isActive) => {
+      const response = await api.patch(`/fields/${id}/toggle-active`, isActive, {
+        headers: { 'Content-Type': 'application/json' }
+      });
+      return response.data;
+    },
   /**
    * Lấy danh sách sân (có pagination)
    * @param {Object} params - Query parameters (pageIndex, pageSize)
@@ -13,6 +25,16 @@ export const fieldService = {
    */
   getFields: async (params = {}) => {
     const response = await api.get("/fields", { params });
+    return response.data;
+  },
+
+  /**
+   * Lấy danh sách sân của mình (Owner) - có pagination
+   * @param {Object} params - Query parameters (pageIndex, pageSize)
+   * @returns {Promise} Paged list of owner's fields
+   */
+  getMyFields: async (params = {}) => {
+    const response = await api.get("/fields/owner/my-fields", { params });
     return response.data;
   },
 
@@ -39,10 +61,22 @@ export const fieldService = {
   /**
    * Lấy danh sách sân theo Complex ID
    * @param {string|number} complexId - Complex ID
+   * @param {boolean} includeTimeSlotCount - Include timeslot count in response
    * @returns {Promise} List of fields
    */
-  getFieldsByComplexId: async (complexId) => {
-    const response = await api.get(`/fields/complex/${complexId}`);
+  getFieldsByComplexId: async (complexId, includeTimeSlotCount = false) => {
+    const params = includeTimeSlotCount ? { includeTimeSlotCount: true } : {};
+    const response = await api.get(`/fields/complex/${complexId}`, { params });
+    return response.data;
+  },
+
+  /**
+   * Lấy danh sách sân theo Complex ID kèm số lượng timeslot - API mới
+   * @param {string|number} complexId - Complex ID
+   * @returns {Promise} List of fields with timeslot count
+   */
+  getFieldsByComplexIdWithTimeSlotCount: async (complexId) => {
+    const response = await api.get(`/fields/complex/${complexId}/with-timeslot-count`);
     return response.data;
   },
 
@@ -76,6 +110,7 @@ export const fieldService = {
     const response = await api.delete(`/fields/${id}`);
     return response.data;
   },
+
 };
 
 export default fieldService;

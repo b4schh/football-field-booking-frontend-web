@@ -10,4 +10,6 @@ export { default as useUserStore } from "./userStore";
 export { default as useNotificationStore } from "./notificationStore";
 export { default as useReviewStore } from "./reviewStore";
 export { default as useBookingDraftStore } from "./bookingDraftStore";
+export { default as useFavoriteStore } from "./favoriteStore";
+export { default as useLocationStore } from "./locationStore";
 export { default as useToastStore, useToast } from "./toastStore";

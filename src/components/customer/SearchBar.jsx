@@ -79,9 +79,9 @@ const SURFACE_TYPES = [
 // Field Size options
 const FIELD_SIZES = [
   { value: null, label: "Tất cả" },
-  { value: "Sân 5", label: "Sân 5" },
-  { value: "Sân 7", label: "Sân 7" },
-  { value: "Sân 11 ", label: "Sân 11" },
+  { value: "Sân 5 người", label: "Sân 5 người" },
+  { value: "Sân 7 người", label: "Sân 7 người" },
+  { value: "Sân 11 người ", label: "Sân 11 người" },
 ];
 
 // Price range options
@@ -128,11 +128,12 @@ export default function SearchBar() {
     const fetchProvinces = async () => {
       setIsLoadingProvinces(true);
       try {
-        const response = await locationService.getProvinces();
-        if (response.success && response.data) {
+        const data = await locationService.getProvinces();
+        
+        if (data && Array.isArray(data)) {
           const provinceOptions = [
             { value: null, label: "Tất cả" },
-            ...response.data.map(province => ({
+            ...data.map(province => ({
               value: province.code,
               label: province.name
             }))
@@ -159,11 +160,11 @@ export default function SearchBar() {
 
       setIsLoadingWards(true);
       try {
-        const response = await locationService.getWardsByProvince(selectedProvinceCode);
-        if (response.success && response.data) {
+        const data = await locationService.getWardsByProvince(selectedProvinceCode);
+        if (data && Array.isArray(data)) {
           const wardOptions = [
             { value: null, label: "Tất cả" },
-            ...response.data.map(ward => ({
+            ...data.map(ward => ({
               value: ward.code,
               label: ward.name
             }))

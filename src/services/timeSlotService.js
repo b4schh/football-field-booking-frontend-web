@@ -37,11 +37,17 @@ export const timeSlotService = {
 
   /**
    * Tạo khung giờ mới
-   * @param {Object} timeSlotData - { fieldId, startTime, endTime, price }
+   * @param {Object} timeSlotData - { fieldId, startTime, endTime }
    * @returns {Promise} Created timeslot
    */
   createTimeSlot: async (timeSlotData) => {
-    const response = await api.post("/timeslots", timeSlotData);
+    // Convert time format HH:mm to HH:mm:ss for TimeSpan
+    const payload = {
+      ...timeSlotData,
+      startTime: timeSlotData.startTime ? `${timeSlotData.startTime}:00` : null,
+      endTime: timeSlotData.endTime ? `${timeSlotData.endTime}:00` : null,
+    };
+    const response = await api.post("/timeslots", payload);
     return response.data;
   },
 
@@ -52,7 +58,15 @@ export const timeSlotService = {
    * @returns {Promise} Updated timeslot
    */
   updateTimeSlot: async (id, timeSlotData) => {
-    const response = await api.put(`/timeslots/${id}`, timeSlotData);
+    // Convert time format HH:mm to HH:mm:ss for TimeSpan if present
+    const payload = { ...timeSlotData };
+    if (payload.startTime && payload.startTime.length === 5) {
+      payload.startTime = `${payload.startTime}:00`;
+    }
+    if (payload.endTime && payload.endTime.length === 5) {
+      payload.endTime = `${payload.endTime}:00`;
+    }
+    const response = await api.put(`/timeslots/${id}`, payload);
     return response.data;
   },
 
@@ -63,6 +77,32 @@ export const timeSlotService = {
    */
   deleteTimeSlot: async (id) => {
     const response = await api.delete(`/timeslots/${id}`);
+    return response.data;
+  },
+
+  /**
+   * Toggle isActive status của TimeSlot (API mới)
+   * @param {string|number} id - TimeSlot ID
+   * @param {boolean} isActive - New isActive status
+   * @returns {Promise} Updated timeslot
+   */
+  toggleTimeSlotActive: async (id, isActive) => {
+    const response = await api.patch(`/timeslots/${id}/toggle-active`, isActive, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    return response.data;
+  },
+
+  /**
+   * Lấy tất cả timeslots của owner (with pagination)
+   * @param {number} pageIndex - Page number (default 1)
+   * @param {number} pageSize - Items per page (default 10)
+   * @returns {Promise} Paged timeslots của owner
+   */
+  getOwnerTimeSlots: async (pageIndex = 1, pageSize = 10) => {
+    const response = await api.get(`/timeslots/owner/my-time-slots`, {
+      params: { pageIndex, pageSize }
+    });
     return response.data;
   },
 };

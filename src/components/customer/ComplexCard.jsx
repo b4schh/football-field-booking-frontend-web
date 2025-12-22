@@ -2,10 +2,15 @@ import { IoLocationOutline } from "react-icons/io5";
 import { IoPhonePortraitOutline } from "react-icons/io5";
 import { GiSoccerField } from "react-icons/gi";
 import { MdAccessTime } from "react-icons/md";
+import { HiHeart, HiOutlineHeart } from "react-icons/hi";
 import { Link } from "react-router-dom";
-import { getComplexImageUrl } from "../../utils/imageHelper";
+import { getComplexImageUrl, COMPLEX_PLACEHOLDER } from "../../utils/imageHelper";
+import { useAuthStore, useFavoriteStore } from "../../store";
 
 export default function ComplexCard({ complex }) {
+  const { isAuthenticated } = useAuthStore();
+  const { isFavorite, toggleFavorite } = useFavoriteStore();
+  
   // Format địa chỉ
   if (!complex) return null;
 
@@ -18,7 +23,20 @@ export default function ComplexCard({ complex }) {
   };
 
   // Placeholder image nếu không có ảnh
-  const imageUrl = getComplexImageUrl(complex.mainImageUrl) || "https://placehold.co/348x192?text=San+Bong";
+  const imageUrl = getComplexImageUrl(complex.mainImageUrl);
+
+  const handleToggleFavorite = async (e) => {
+    e.preventDefault(); // Prevent navigation to detail page
+    e.stopPropagation();
+    
+    if (!isAuthenticated) {
+      return; // Could show login modal here
+    }
+    
+    await toggleFavorite(complex.id);
+  };
+
+  const isFav = isAuthenticated && isFavorite(complex.id);
 
   return (
     <div className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-shadow duration-300 p-4 flex flex-col gap-4 h-full">
@@ -29,9 +47,28 @@ export default function ComplexCard({ complex }) {
           alt={complex.name}
           className="w-full h-48 object-cover hover:scale-105 transition-transform duration-300"
           onError={(e) => {
-            e.target.src = "https://placehold.co/348x192?text=San+Bong";
+            // Fallback to local placeholder image to prevent infinite loop
+            if (e.target.src !== COMPLEX_PLACEHOLDER) {
+              e.target.src = COMPLEX_PLACEHOLDER;
+            }
           }}
         />
+        
+        {/* Favorite button */}
+        {isAuthenticated && (
+          <button
+            onClick={handleToggleFavorite}
+            className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-md hover:bg-white transition-all"
+            title={isFav ? "Xóa khỏi yêu thích" : "Thêm vào yêu thích"}
+          >
+            {isFav ? (
+              <HiHeart className="text-red-500 text-xl" />
+            ) : (
+              <HiOutlineHeart className="text-gray-700 text-xl" />
+            )}
+          </button>
+        )}
+        
         {complex.status === 0 && (
           <div className="absolute top-2 right-2 bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-semibold">
             Đang chờ duyệt

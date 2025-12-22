@@ -13,7 +13,8 @@ const locationService = {
   getProvinces: async () => {
     try {
       const response = await api.get("/locations/provinces");
-      return response.data;
+      // Backend trả về { data: [...], message: "...", success: true }
+      return response.data.data;
     } catch (error) {
       console.error("Error fetching provinces:", error);
       throw error;
@@ -28,7 +29,8 @@ const locationService = {
   getWardsByProvince: async (provinceCode) => {
     try {
       const response = await api.get(`/locations/provinces/${provinceCode}/wards`);
-      return response.data;
+      // Backend trả về { data: [...], message: "...", success: true }
+      return response.data.data;
     } catch (error) {
       console.error(`Error fetching wards for province ${provinceCode}:`, error);
       throw error;

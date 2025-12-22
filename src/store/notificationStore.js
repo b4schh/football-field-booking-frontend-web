@@ -5,16 +5,32 @@ const useNotificationStore = create((set, get) => ({
   // State
   notifications: [],
   unreadCount: 0,
-  settings: null,
+  hasMore: false,
+  lastId: null,
   isLoading: false,
   error: null,
 
+  // SSE connection state
+  isConnected: false,
+
   // Actions
-  fetchNotifications: async (params = {}) => {
+  fetchNotifications: async (sinceId = null, limit = 50) => {
     set({ isLoading: true, error: null });
     try {
+      const params = {};
+      if (sinceId) params.sinceId = sinceId;
+      if (limit) params.limit = limit;
+
       const data = await notificationService.getNotifications(params);
-      set({ notifications: data, isLoading: false });
+      
+      set({
+        notifications: data.notifications || [],
+        unreadCount: data.unreadCount || 0,
+        hasMore: data.hasMore || false,
+        lastId: data.lastId || null,
+        isLoading: false,
+      });
+      
       return { success: true, data };
     } catch (error) {
       const errorMessage =
@@ -24,16 +40,35 @@ const useNotificationStore = create((set, get) => ({
     }
   },
 
+  loadMoreNotifications: async () => {
+    const { lastId, hasMore, isLoading } = get();
+    if (!hasMore || isLoading) return;
+
+    set({ isLoading: true });
+    try {
+      const data = await notificationService.getNotifications({ sinceId: lastId, limit: 50 });
+      
+      set((state) => ({
+        notifications: [...state.notifications, ...(data.notifications || [])],
+        hasMore: data.hasMore || false,
+        lastId: data.lastId || null,
+        isLoading: false,
+      }));
+      
+      return { success: true };
+    } catch (error) {
+      set({ isLoading: false });
+      return { success: false };
+    }
+  },
+
   fetchUnreadCount: async () => {
     try {
       const data = await notificationService.getUnreadCount();
       set({ unreadCount: data.count || 0 });
       return { success: true, data };
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message ||
-        "Không thể tải số lượng thông báo chưa đọc";
-      return { success: false, error: errorMessage };
+      return { success: false };
     }
   },
 
@@ -42,99 +77,76 @@ const useNotificationStore = create((set, get) => ({
       await notificationService.markAsRead(id);
       set((state) => ({
         notifications: state.notifications.map((notif) =>
-          notif.id === id ? { ...notif, read: true } : notif
+          notif.id === id ? { ...notif, isRead: true, readAt: new Date().toISOString() } : notif
         ),
         unreadCount: Math.max(0, state.unreadCount - 1),
       }));
       return { success: true };
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "Không thể đánh dấu đã đọc";
-      set({ error: errorMessage });
-      return { success: false, error: errorMessage };
+      return { success: false };
+    }
+  },
+
+  markMultipleAsRead: async (ids) => {
+    try {
+      await notificationService.markMultipleAsRead(ids);
+      set((state) => ({
+        notifications: state.notifications.map((notif) =>
+          ids.includes(notif.id) ? { ...notif, isRead: true, readAt: new Date().toISOString() } : notif
+        ),
+        unreadCount: Math.max(0, state.unreadCount - ids.length),
+      }));
+      return { success: true };
+    } catch (error) {
+      return { success: false };
     }
   },
 
   markAllAsRead: async () => {
-    set({ isLoading: true, error: null });
     try {
       await notificationService.markAllAsRead();
       set((state) => ({
         notifications: state.notifications.map((notif) => ({
           ...notif,
-          read: true,
+          isRead: true,
+          readAt: new Date().toISOString(),
         })),
         unreadCount: 0,
-        isLoading: false,
       }));
       return { success: true };
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message ||
-        "Không thể đánh dấu tất cả đã đọc";
-      set({ error: errorMessage, isLoading: false });
-      return { success: false, error: errorMessage };
+      return { success: false };
     }
   },
 
   deleteNotification: async (id) => {
     try {
       await notificationService.deleteNotification(id);
-      set((state) => ({
-        notifications: state.notifications.filter((notif) => notif.id !== id),
-      }));
+      set((state) => {
+        const deletedNotif = state.notifications.find(n => n.id === id);
+        return {
+          notifications: state.notifications.filter((notif) => notif.id !== id),
+          unreadCount: deletedNotif && !deletedNotif.isRead 
+            ? Math.max(0, state.unreadCount - 1) 
+            : state.unreadCount,
+        };
+      });
       return { success: true };
     } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "Không thể xóa thông báo";
-      set({ error: errorMessage });
-      return { success: false, error: errorMessage };
+      return { success: false };
     }
   },
 
-  deleteAllNotifications: async () => {
-    set({ isLoading: true, error: null });
-    try {
-      await notificationService.deleteAllNotifications();
-      set({ notifications: [], unreadCount: 0, isLoading: false });
-      return { success: true };
-    } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "Không thể xóa tất cả thông báo";
-      set({ error: errorMessage, isLoading: false });
-      return { success: false, error: errorMessage };
-    }
+  // SSE: Add new notification from real-time push
+  addNotification: (notification) => {
+    set((state) => ({
+      notifications: [notification, ...state.notifications],
+      unreadCount: state.unreadCount + 1,
+    }));
   },
 
-  fetchNotificationSettings: async () => {
-    set({ isLoading: true, error: null });
-    try {
-      const data = await notificationService.getNotificationSettings();
-      set({ settings: data, isLoading: false });
-      return { success: true, data };
-    } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "Không thể tải cài đặt thông báo";
-      set({ error: errorMessage, isLoading: false });
-      return { success: false, error: errorMessage };
-    }
-  },
-
-  updateNotificationSettings: async (settings) => {
-    set({ isLoading: true, error: null });
-    try {
-      const data = await notificationService.updateNotificationSettings(
-        settings
-      );
-      set({ settings: data, isLoading: false });
-      return { success: true, data };
-    } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "Cập nhật cài đặt thất bại";
-      set({ error: errorMessage, isLoading: false });
-      return { success: false, error: errorMessage };
-    }
-  },
+  // SSE connection status
+  setConnected: (isConnected) => set({ isConnected }),
 
   clearError: () => set({ error: null }),
 }));

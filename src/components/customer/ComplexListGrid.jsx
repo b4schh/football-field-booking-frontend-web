@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useComplexStore } from "../../store";
 import ComplexCard from "./ComplexCard";
-import Pagination from "./Pagination";
+import Pagination from "../common/Pagination";
 
 export default function ComplexListGrid() {
   const { complexes, pagination, fetchComplexes, isLoading, error } =
