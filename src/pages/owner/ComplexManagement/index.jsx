@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { MdAdd, MdEdit, MdDelete, MdStore, MdVisibility } from "react-icons/md";
+import { MdAdd, MdEdit, MdDelete, MdStore, MdVisibility, MdRefresh } from "react-icons/md";
 import { FaMagic } from "react-icons/fa";
 import PageHeader from "../../../components/dashboard/PageHeader";
 import LoadingSkeleton from "../../../components/dashboard/LoadingSkeleton";
@@ -92,6 +92,21 @@ export default function ComplexManagement() {
       fetchComplexes();
     } catch (error) {
       toast.error(error.response?.data?.message || "Cập nhật trạng thái thất bại");
+    }
+  };
+
+  const handleResubmit = async (e, complex) => {
+    e.stopPropagation();
+    if (!confirm(`Bạn có chắc muốn gửi lại yêu cầu phê duyệt cho "${complex.name}"?`)) {
+      return;
+    }
+
+    try {
+      await complexService.resubmitComplex(complex.id);
+      toast.success("Đã gửi lại yêu cầu phê duyệt thành công");
+      fetchComplexes();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Gửi lại yêu cầu thất bại");
     }
   };
 
@@ -212,6 +227,17 @@ export default function ComplexManagement() {
           >
             <MdVisibility className="text-lg" />
           </button>
+          
+          {row.status === 2 && (
+            <button
+              onClick={(e) => handleResubmit(e, row)}
+              className="p-2 hover:bg-purple-50 rounded-lg text-purple-600 transition-colors"
+              title="Gửi lại yêu cầu phê duyệt"
+            >
+              <MdRefresh className="text-lg" />
+            </button>
+          )}
+          
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -242,10 +268,6 @@ export default function ComplexManagement() {
       <div>
         <PageHeader 
           title="Quản lý cụm sân"
-          breadcrumbs={[
-            { label: "Trang chủ", path: "/owner" },
-            { label: "Quản lý cụm sân" }
-          ]}
         />
         <LoadingSkeleton type="table" rows={10} />
       </div>
@@ -256,10 +278,6 @@ export default function ComplexManagement() {
     <div>
       <PageHeader 
         title="Quản lý cụm sân"
-        breadcrumbs={[
-          { label: "Trang chủ", path: "/owner" },
-          { label: "Quản lý cụm sân" }
-        ]}
         actions={
           <div className="flex items-center gap-3">
             <button

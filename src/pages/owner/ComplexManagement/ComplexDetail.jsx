@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { MdArrowBack, MdEdit, MdAdd, MdVisibility, MdDelete } from "react-icons/md";
+import {
+  MdArrowBack,
+  MdEdit,
+  MdAdd,
+  MdVisibility,
+  MdDelete,
+  MdRefresh,
+} from "react-icons/md";
 import PageHeader from "../../../components/dashboard/PageHeader";
 import LoadingSkeleton from "../../../components/dashboard/LoadingSkeleton";
 import EmptyState from "../../../components/dashboard/EmptyState";
@@ -9,6 +16,7 @@ import ToggleSwitch from "../../../components/owner/ToggleSwitch";
 import ComplexFormModal from "../../../components/owner/ComplexFormModal";
 import FieldFormModal from "../../../components/owner/FieldFormModal";
 import ComplexImageManager from "../../../components/owner/ComplexImageManager";
+import ComplexReviewsSection from "../../../components/owner/ComplexReviewsSection";
 import DataTable from "../../../components/dashboard/DataTable";
 import Pagination from "../../../components/common/Pagination";
 import complexService from "../../../services/complexService";
@@ -24,7 +32,7 @@ export default function ComplexDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
-  
+
   const [complex, setComplex] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -32,8 +40,17 @@ export default function ComplexDetail() {
   const [updating, setUpdating] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  
-  const { fields, loading: fieldsLoading, fetchFieldsByComplex, fetchFieldsByComplexWithTimeSlotCount, createField, updateField, deleteField, toggleFieldActive } = useFields();
+
+  const {
+    fields,
+    loading: fieldsLoading,
+    fetchFieldsByComplex,
+    fetchFieldsByComplexWithTimeSlotCount,
+    createField,
+    updateField,
+    deleteField,
+    toggleFieldActive,
+  } = useFields();
   const [editingField, setEditingField] = useState(null);
   const [fieldSubmitting, setFieldSubmitting] = useState(false);
 
@@ -76,6 +93,20 @@ export default function ComplexDetail() {
       setComplex((prev) => ({ ...prev, isActive }));
     } catch (error) {
       toast.error("Cập nhật trạng thái thất bại");
+    }
+  };
+
+  const handleResubmit = async () => {
+    if (!confirm(`Bạn có chắc muốn gửi lại yêu cầu phê duyệt cho "${complex.name}"?`)) {
+      return;
+    }
+
+    try {
+      await complexService.resubmitComplex(id);
+      toast.success("Đã gửi lại yêu cầu phê duyệt thành công");
+      loadComplexData();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Gửi lại yêu cầu thất bại");
     }
   };
 
@@ -146,7 +177,9 @@ export default function ComplexDetail() {
     {
       key: "id",
       label: "ID",
-      render: (row) => <span className="font-semibold text-gray-900">{row.id}</span>,
+      render: (row) => (
+        <span className="font-semibold text-gray-900">{row.id}</span>
+      ),
     },
     {
       key: "name",
@@ -156,12 +189,18 @@ export default function ComplexDetail() {
     {
       key: "fieldSize",
       label: "Loại sân",
-      render: (field) => <span className="text-gray-600">{field.fieldSize || field.fieldType || "Chưa rõ"}</span>,
+      render: (field) => (
+        <span className="text-gray-600">
+          {field.fieldSize || field.fieldType || "Chưa rõ"}
+        </span>
+      ),
     },
     {
       key: "surfaceType",
       label: "Mặt sân",
-      render: (field) => <span className="text-gray-600">{field.surfaceType || "Chưa có"}</span>,
+      render: (field) => (
+        <span className="text-gray-600">{field.surfaceType || "Chưa có"}</span>
+      ),
     },
     {
       key: "timeSlotCount",
@@ -236,9 +275,8 @@ export default function ComplexDetail() {
       <PageHeader
         title={complex.name}
         breadcrumbs={[
-          { label: "Trang chủ", path: "/owner" },
           { label: "Quản lý cụm sân", path: "/owner/complexes" },
-          { label: complex.name }
+          { label: complex.name },
         ]}
         actions={
           <div className="flex items-center gap-3">
@@ -249,6 +287,15 @@ export default function ComplexDetail() {
               <MdArrowBack />
               Quay lại
             </button>
+            {complex.status === 2 && (
+              <button
+                onClick={handleResubmit}
+                className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                <MdRefresh />
+                Gửi lại yêu cầu phê duyệt
+              </button>
+            )}
             <button
               onClick={() => setShowEditModal(true)}
               className="flex items-center gap-2 px-4 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors"
@@ -265,13 +312,14 @@ export default function ComplexDetail() {
         {/* Main Image */}
         {complex.mainImageUrl && (
           <div className="w-full h-64 bg-gray-200">
-            <img 
-              src={complex.mainImageUrl} 
+            <img
+              src={complex.mainImageUrl}
               alt={complex.name}
               className="w-full h-full object-cover"
               onError={(e) => {
-                e.target.style.display = 'none';
-                e.target.parentElement.innerHTML = '<div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200"><span class="text-4xl text-slate-400">⚽</span></div>';
+                e.target.style.display = "none";
+                e.target.parentElement.innerHTML =
+                  '<div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200"><span class="text-4xl text-slate-400">⚽</span></div>';
               }}
             />
           </div>
@@ -290,9 +338,17 @@ export default function ComplexDetail() {
 
           {/* Rejection Notice */}
           {complex.status === 2 && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-800">
-              <p className="font-semibold">Cụm sân bị từ chối</p>
-              <p className="mt-1">Vui lòng chỉnh sửa thông tin và đợi Admin duyệt lại.</p>
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <p className="font-semibold text-red-900 mb-2">⚠️ Cụm sân bị từ chối</p>
+              {complex.rejectionReason && (
+                <div className="mb-3">
+                  <p className="text-sm font-medium text-red-800">Lý do:</p>
+                  <p className="text-sm text-red-700 mt-1">{complex.rejectionReason}</p>
+                </div>
+              )}
+              <p className="text-sm text-red-800">
+                Vui lòng chỉnh sửa thông tin theo yêu cầu và nhấn <strong>"Gửi lại yêu cầu phê duyệt"</strong> để Admin xem xét lại.
+              </p>
             </div>
           )}
 
@@ -300,13 +356,17 @@ export default function ComplexDetail() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 pt-4 border-t">
             <div>
               <p className="text-sm text-gray-500 mb-1">Số điện thoại</p>
-              <p className="font-medium text-gray-900">{complex.phone || "-"}</p>
+              <p className="font-medium text-gray-900">
+                {complex.phone || "-"}
+              </p>
             </div>
             <div>
               <p className="text-sm text-gray-500 mb-1">Giờ hoạt động</p>
               <p className="font-medium text-gray-900">
                 {complex.openingTime && complex.closingTime
-                  ? `${formatTimeSpan(complex.openingTime)} - ${formatTimeSpan(complex.closingTime)}`
+                  ? `${formatTimeSpan(complex.openingTime)} - ${formatTimeSpan(
+                      complex.closingTime
+                    )}`
                   : "-"}
               </p>
             </div>
@@ -316,7 +376,9 @@ export default function ComplexDetail() {
           <div className="pt-4 border-t">
             <p className="text-sm text-gray-500 mb-2">Địa chỉ</p>
             <div className="space-y-1">
-              <p className="font-medium text-gray-900">{complex.street}, {complex.ward}, {complex.province}</p>
+              <p className="font-medium text-gray-900">
+                {complex.street}, {complex.ward}, {complex.province}
+              </p>
             </div>
           </div>
 
@@ -324,7 +386,9 @@ export default function ComplexDetail() {
           {complex.description && (
             <div className="pt-4 border-t">
               <p className="text-sm text-gray-500 mb-2">Mô tả</p>
-              <p className="text-gray-700 leading-relaxed">{complex.description}</p>
+              <p className="text-gray-700 leading-relaxed">
+                {complex.description}
+              </p>
             </div>
           )}
 
@@ -333,24 +397,24 @@ export default function ComplexDetail() {
             <div>
               <p className="text-sm text-gray-500 mb-1">Ngày tạo</p>
               <p className="text-gray-700">
-                {new Date(complex.createdAt).toLocaleDateString('vi-VN', {
-                  year: 'numeric',
-                  month: '2-digit',
-                  day: '2-digit',
-                  hour: '2-digit',
-                  minute: '2-digit'
+                {new Date(complex.createdAt).toLocaleDateString("vi-VN", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
                 })}
               </p>
             </div>
             <div>
               <p className="text-sm text-gray-500 mb-1">Cập nhật cuối</p>
               <p className="text-gray-700">
-                {new Date(complex.updatedAt).toLocaleDateString('vi-VN', {
-                  year: 'numeric',
-                  month: '2-digit',
-                  day: '2-digit',
-                  hour: '2-digit',
-                  minute: '2-digit'
+                {new Date(complex.updatedAt).toLocaleDateString("vi-VN", {
+                  year: "numeric",
+                  month: "2-digit",
+                  day: "2-digit",
+                  hour: "2-digit",
+                  minute: "2-digit",
                 })}
               </p>
             </div>
@@ -405,6 +469,9 @@ export default function ComplexDetail() {
           </>
         )}
       </div>
+      
+      {/* Reviews Section */}
+      <ComplexReviewsSection complexId={id} />
 
       {/* Modals */}
       <ComplexFormModal

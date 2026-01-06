@@ -307,15 +307,12 @@ export default function FieldDetail() {
       <PageHeader
         title={field.name}
         breadcrumbs={
-          // Dynamic breadcrumb: nếu user đến từ /owner/fields
           location.state?.from === "/owner/fields"
             ? [
-                { label: "Trang chủ", path: "/owner" },
                 { label: "Quản lý sân", path: "/owner/fields" },
                 { label: field.name },
               ]
             : [
-                { label: "Trang chủ", path: "/owner" },
                 { label: "Quản lý cụm sân", path: "/owner/complexes" },
                 {
                   label: complex?.name || "Chi tiết cụm sân",

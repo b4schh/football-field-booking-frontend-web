@@ -3,31 +3,13 @@ import api from "./api";
 /**
  * Booking Service
  * Xử lý các API calls liên quan đến đặt sân
+ * Mapping đúng theo BookingsController backend
  */
 
 export const bookingService = {
   /**
-   * Lấy danh sách booking
-   * @param {Object} params - Query parameters (status, date, etc.)
-   * @returns {Promise} List of bookings
-   */
-  getBookings: async (params = {}) => {
-    const response = await api.get("/bookings", { params });
-    return response.data;
-  },
-
-  /**
-   * Lấy chi tiết một booking
-   * @param {string|number} id - Booking ID
-   * @returns {Promise} Booking details
-   */
-  getBookingById: async (id) => {
-    const response = await api.get(`/bookings/${id}`);
-    return response.data;
-  },
-
-  /**
-   * Tạo booking mới
+   * Tạo booking mới (Bước 1 - Customer)
+   * POST /api/bookings
    * @param {Object} bookingData - { fieldId, timeSlotId, bookingDate, note }
    * @returns {Promise} Created booking
    */
@@ -37,7 +19,8 @@ export const bookingService = {
   },
 
   /**
-   * Upload bill thanh toán cọc (Bước 2 của booking flow)
+   * Upload bill thanh toán cọc (Bước 2 - Customer)
+   * POST /api/bookings/{id}/upload-payment
    * @param {string|number} id - Booking ID
    * @param {FormData} formData - Form data chứa file ảnh bill
    * @returns {Promise} Updated booking
@@ -52,7 +35,8 @@ export const bookingService = {
   },
 
   /**
-   * Duyệt booking (Owner - Bước 3)
+   * Duyệt booking (Bước 3 - Owner)
+   * POST /api/bookings/{id}/approve
    * @param {string|number} id - Booking ID
    * @returns {Promise} Updated booking
    */
@@ -62,7 +46,8 @@ export const bookingService = {
   },
 
   /**
-   * Từ chối booking (Owner - Bước 3)
+   * Từ chối booking (Bước 3 - Owner)
+   * POST /api/bookings/{id}/reject
    * @param {string|number} id - Booking ID
    * @param {string} reason - Lý do từ chối
    * @returns {Promise} Updated booking
@@ -73,29 +58,19 @@ export const bookingService = {
   },
 
   /**
-   * Cập nhật booking
+   * Hủy booking (Customer hoặc Owner)
+   * POST /api/bookings/{id}/cancel
    * @param {string|number} id - Booking ID
-   * @param {Object} bookingData - Updated booking data
-   * @returns {Promise} Updated booking
-   */
-  updateBooking: async (id, bookingData) => {
-    const response = await api.put(`/bookings/${id}`, bookingData);
-    return response.data;
-  },
-
-  /**
-   * Hủy booking
-   * @param {string|number} id - Booking ID
-   * @param {string} reason - Lý do hủy (optional)
    * @returns {Promise} Response
    */
-  cancelBooking: async (id, reason = "") => {
-    const response = await api.post(`/bookings/${id}/cancel`, { reason });
+  cancelBooking: async (id) => {
+    const response = await api.post(`/bookings/${id}/cancel`);
     return response.data;
   },
 
   /**
-   * Hoàn thành booking
+   * Đánh dấu hoàn thành booking (Owner)
+   * POST /api/bookings/{id}/complete
    * @param {string|number} id - Booking ID
    * @returns {Promise} Updated booking
    */
@@ -105,8 +80,20 @@ export const bookingService = {
   },
 
   /**
+   * Đánh dấu không đến (Owner)
+   * POST /api/bookings/{id}/no-show
+   * @param {string|number} id - Booking ID
+   * @returns {Promise} Updated booking
+   */
+  markNoShow: async (id) => {
+    const response = await api.post(`/bookings/${id}/no-show`);
+    return response.data;
+  },
+
+  /**
    * Lấy booking của customer hiện tại
-   * @param {Object} params - Query parameters
+   * GET /api/bookings/my-bookings
+   * @param {Object} params - Query parameters (status)
    * @returns {Promise} Customer's bookings
    */
   getMyBookings: async (params = {}) => {
@@ -115,9 +102,10 @@ export const bookingService = {
   },
 
   /**
-   * Lấy booking của owner hiện tại
-   * @param {Object} params - Query parameters
-   * @returns {Promise} Owner's bookings
+   * Lấy booking của owner hiện tại (có phân trang)
+   * GET /api/bookings/owner-bookings
+   * @param {Object} params - Query parameters (pageIndex, pageSize, status)
+   * @returns {Promise} Owner's bookings với pagination metadata
    */
   getOwnerBookings: async (params = {}) => {
     const response = await api.get("/bookings/owner-bookings", { params });
@@ -125,31 +113,35 @@ export const bookingService = {
   },
 
   /**
-   * Hoàn thành booking (Owner)
+   * Lấy chi tiết một booking
+   * GET /api/bookings/{id}
    * @param {string|number} id - Booking ID
-   * @returns {Promise} Updated booking
+   * @returns {Promise} Booking details
    */
-  completeBooking: async (id) => {
-    const response = await api.post(`/bookings/${id}/complete`);
+  getBookingById: async (id) => {
+    const response = await api.get(`/bookings/${id}`);
     return response.data;
   },
 
   /**
-   * Kiểm tra khả năng đặt sân (stub - backend may implement `/bookings/check-availability`)
-   * @param {Object} bookingData
+   * Admin - Lấy tất cả bookings với filters (Admin only)
+   * GET /api/bookings/admin/all
+   * @param {Object} params - { pageIndex, pageSize, status, complexId, ownerId, customerId, fromDate, toDate, searchTerm }
+   * @returns {Promise} All bookings với pagination
    */
-  checkAvailability: async (bookingData) => {
-    const response = await api.post(`/bookings/check-availability`, bookingData);
+  getAllBookingsForAdmin: async (params = {}) => {
+    const response = await api.get("/bookings/admin/all", { params });
     return response.data;
   },
 
   /**
-   * Đánh dấu không đến (Owner)
+   * Admin - Force complete booking (testing purpose)
+   * PATCH /api/admin/{id}/force-complete
    * @param {string|number} id - Booking ID
-   * @returns {Promise} Updated booking
+   * @returns {Promise} Response
    */
-  markNoShow: async (id) => {
-    const response = await api.post(`/bookings/${id}/no-show`);
+  adminForceComplete: async (id) => {
+    const response = await api.patch(`/admin/${id}/force-complete`);
     return response.data;
   },
 };

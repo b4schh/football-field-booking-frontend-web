@@ -156,7 +156,7 @@ export const bookingsApi = {
 
   // Owner: Get all my bookings
   getOwnerBookings: () => {
-    return api.get("/bookings/owner/my-bookings");
+    return api.get("/bookings/owner-bookings");
   },
 
   // Create booking
@@ -230,6 +230,54 @@ export const complexImagesApi = {
   },
 };
 
+// ==================== OWNER STATISTICS API ====================
+export const ownerStatisticsApi = {
+  // Get dashboard statistics
+  getDashboardStats: () => {
+    return api.get("/statistics/owner/dashboard");
+  },
+
+  // Get revenue chart data
+  getRevenueChart: (startDate, endDate) => {
+    const params = {};
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+    return api.get("/statistics/owner/revenue", { params });
+  },
+
+  // Get top fields
+  getTopFields: (limit = 5) => {
+    return api.get("/statistics/owner/top-fields", { params: { limit } });
+  },
+
+  // Get peak hours
+  getPeakHours: () => {
+    return api.get("/statistics/owner/peak-hours");
+  },
+
+  // Get upcoming bookings
+  getUpcomingBookings: (hoursAhead = 3) => {
+    return api.get("/statistics/owner/upcoming", { params: { hoursAhead } });
+  },
+
+  // Get revenue summary by period
+  // periodType: 0=Daily, 1=Weekly, 2=Monthly, 3=Quarterly, 4=Yearly
+  getRevenueSummary: (periodType, startDate, endDate) => {
+    const params = { periodType };
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+    return api.get("/statistics/owner/revenue-summary", { params });
+  },
+
+  // Get revenue comparison
+  getRevenueComparison: (periodType, startDate, endDate) => {
+    const params = { periodType };
+    if (startDate) params.startDate = startDate;
+    if (endDate) params.endDate = endDate;
+    return api.get("/statistics/owner/revenue-comparison", { params });
+  },
+};
+
 // Export all APIs
 const dashboardApi = {
   users: usersApi,
@@ -238,6 +286,7 @@ const dashboardApi = {
   timeSlots: timeSlotsApi,
   bookings: bookingsApi,
   complexImages: complexImagesApi,
+  ownerStatistics: ownerStatisticsApi,
 };
 
 export default dashboardApi;

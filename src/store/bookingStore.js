@@ -1,56 +1,43 @@
 import { create } from "zustand";
 import { bookingService } from "../services/bookingService";
 
+/**
+ * Booking Store
+ * Quản lý state cho toàn bộ booking flow
+ */
 const useBookingStore = create((set, get) => ({
   // State
   bookings: [],
   currentBooking: null,
   myBookings: [],
+  ownerBookings: [],
+  ownerBookingsPagination: {
+    pageIndex: 1,
+    pageSize: 10,
+    totalRecords: 0,
+    totalPages: 0,
+    hasPreviousPage: false,
+    hasNextPage: false,
+  },
   isLoading: false,
   error: null,
 
   // Actions
-  fetchBookings: async (filters = {}) => {
-    set({ isLoading: true, error: null });
-    try {
-      const data = await bookingService.getBookings(filters);
-      set({ bookings: data, isLoading: false });
-      return { success: true, data };
-    } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "Không thể tải danh sách đặt sân";
-      set({ error: errorMessage, isLoading: false });
-      return { success: false, error: errorMessage };
-    }
-  },
 
-  fetchBookingById: async (id) => {
-    set({ isLoading: true, error: null });
-    try {
-      const response = await bookingService.getBookingById(id);
-      const booking = response.data; // Extract data from ApiResponse
-      set({ currentBooking: booking, isLoading: false });
-      return { success: true, data: response };
-    } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "Không thể tải thông tin đặt sân";
-      set({ error: errorMessage, isLoading: false });
-      return { success: false, error: errorMessage };
-    }
-  },
-
+  /**
+   * Tạo booking mới (Customer - Bước 1)
+   */
   createBooking: async (bookingData) => {
     set({ isLoading: true, error: null });
     try {
       const response = await bookingService.createBooking(bookingData);
-      // Backend returns: { data: { success, message, data: BookingDto } }
-      const booking = response.data; // This is the BookingDto
+      const booking = response.data;
       set((state) => ({
         bookings: [...state.bookings, booking],
         currentBooking: booking,
         isLoading: false,
       }));
-      return { success: true, data: booking }; // Return BookingDto directly
+      return { success: true, data: booking };
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || "Đặt sân thất bại";
@@ -59,118 +46,9 @@ const useBookingStore = create((set, get) => ({
     }
   },
 
-  updateBooking: async (id, bookingData) => {
-    set({ isLoading: true, error: null });
-    try {
-      const data = await bookingService.updateBooking(id, bookingData);
-      set((state) => ({
-        bookings: state.bookings.map((booking) =>
-          booking.id === id ? data : booking
-        ),
-        currentBooking:
-          state.currentBooking?.id === id ? data : state.currentBooking,
-        isLoading: false,
-      }));
-      return { success: true, data };
-    } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "Cập nhật đặt sân thất bại";
-      set({ error: errorMessage, isLoading: false });
-      return { success: false, error: errorMessage };
-    }
-  },
-
-  cancelBooking: async (id, reason = "") => {
-    set({ isLoading: true, error: null });
-    try {
-      await bookingService.cancelBooking(id, reason);
-      set((state) => ({
-        bookings: state.bookings.filter((booking) => booking.id !== id),
-        isLoading: false,
-      }));
-      return { success: true };
-    } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "Hủy đặt sân thất bại";
-      set({ error: errorMessage, isLoading: false });
-      return { success: false, error: errorMessage };
-    }
-  },
-
-  // Lấy booking của user
-  fetchMyBookings: async (params = {}) => {
-    set({ isLoading: true, error: null });
-    try {
-      const response = await bookingService.getMyBookings(params);
-      const bookings = response.data || []; // Extract data from ApiResponse
-      set({ myBookings: bookings, isLoading: false });
-      return { success: true, data: bookings };
-    } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "Không thể tải booking của bạn";
-      set({ error: errorMessage, isLoading: false });
-      return { success: false, error: errorMessage };
-    }
-  },
-
-  // Check availability
-  checkAvailability: async (bookingData) => {
-    set({ isLoading: true, error: null });
-    try {
-      const data = await bookingService.checkAvailability(bookingData);
-      set({ isLoading: false });
-      return { success: true, data };
-    } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "Không thể kiểm tra lịch trống";
-      set({ error: errorMessage, isLoading: false });
-      return { success: false, error: errorMessage };
-    }
-  },
-
-      // Xác nhận booking (Owner/Admin)
-  approveBooking: async (id) => {
-    set({ isLoading: true, error: null });
-    try {
-      const response = await bookingService.approveBooking(id);
-      const data = response.data;
-      set((state) => ({
-        bookings: state.bookings.map((booking) =>
-          booking.id === id ? data : booking
-        ),
-        isLoading: false,
-      }));
-      return { success: true, data };
-    } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "Duyệt booking thất bại";
-      set({ error: errorMessage, isLoading: false });
-      return { success: false, error: errorMessage };
-    }
-  },
-
-  // Từ chối booking (Owner/Admin)
-  rejectBooking: async (id, reason) => {
-    set({ isLoading: true, error: null });
-    try {
-      const response = await bookingService.rejectBooking(id, reason);
-      const data = response.data;
-      set((state) => ({
-        bookings: state.bookings.map((booking) =>
-          booking.id === id ? data : booking
-        ),
-        isLoading: false,
-      }));
-      return { success: true, data };
-    } catch (error) {
-      const errorMessage =
-        error.response?.data?.message || "Từ chối booking thất bại";
-      set({ error: errorMessage, isLoading: false });
-      return { success: false, error: errorMessage };
-    }
-  },
-
-  // Upload payment proof
+  /**
+   * Upload payment proof (Customer - Bước 2)
+   */
   uploadPaymentProof: async (id, formData) => {
     set({ isLoading: true, error: null });
     try {
@@ -178,8 +56,12 @@ const useBookingStore = create((set, get) => ({
       const data = response.data;
       set((state) => ({
         bookings: state.bookings.map((booking) =>
-          booking.id === id ? { ...booking, ...data } : booking
+          booking.id === id ? data : booking
         ),
+        ownerBookings: state.ownerBookings.map((booking) =>
+          booking.id === id ? data : booking
+        ),
+        currentBooking: state.currentBooking?.id === id ? data : state.currentBooking,
         isLoading: false,
       }));
       return { success: true, data };
@@ -191,7 +73,93 @@ const useBookingStore = create((set, get) => ({
     }
   },
 
-  // Hoàn thành booking (Owner)
+  /**
+   * Duyệt booking (Owner - Bước 3)
+   */
+  approveBooking: async (id) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await bookingService.approveBooking(id);
+      const data = response.data;
+      set((state) => ({
+        bookings: state.bookings.map((booking) =>
+          booking.id === id ? data : booking
+        ),
+        ownerBookings: state.ownerBookings.map((booking) =>
+          booking.id === id ? data : booking
+        ),
+        currentBooking: state.currentBooking?.id === id ? data : state.currentBooking,
+        isLoading: false,
+      }));
+      return { success: true, data };
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Duyệt booking thất bại";
+      set({ error: errorMessage, isLoading: false });
+      return { success: false, error: errorMessage };
+    }
+  },
+
+  /**
+   * Từ chối booking (Owner - Bước 3)
+   */
+  rejectBooking: async (id, reason) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await bookingService.rejectBooking(id, reason);
+      const data = response.data;
+      set((state) => ({
+        bookings: state.bookings.map((booking) =>
+          booking.id === id ? data : booking
+        ),
+        ownerBookings: state.ownerBookings.map((booking) =>
+          booking.id === id ? data : booking
+        ),
+        currentBooking: state.currentBooking?.id === id ? data : state.currentBooking,
+        isLoading: false,
+      }));
+      return { success: true, data };
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Từ chối booking thất bại";
+      set({ error: errorMessage, isLoading: false });
+      return { success: false, error: errorMessage };
+    }
+  },
+
+  /**
+   * Hủy booking (Customer hoặc Owner)
+   */
+  cancelBooking: async (id) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await bookingService.cancelBooking(id);
+      const data = response.data;
+      set((state) => ({
+        bookings: state.bookings.map((booking) =>
+          booking.id === id ? data : booking
+        ),
+        myBookings: state.myBookings.map((booking) =>
+          booking.id === id ? data : booking
+        ),
+        ownerBookings: state.ownerBookings.map((booking) =>
+          booking.id === id ? data : booking
+        ),
+        currentBooking: state.currentBooking?.id === id ? data : state.currentBooking,
+        isLoading: false,
+      }));
+      return { success: true, data };
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Hủy đặt sân thất bại";
+      set({ error: errorMessage, isLoading: false });
+      return { success: false, error: errorMessage };
+    }
+  },
+
+  /**
+   * Hoàn thành booking (Owner)
+   */
   completeBooking: async (id) => {
     set({ isLoading: true, error: null });
     try {
@@ -201,6 +169,10 @@ const useBookingStore = create((set, get) => ({
         bookings: state.bookings.map((booking) =>
           booking.id === id ? data : booking
         ),
+        ownerBookings: state.ownerBookings.map((booking) =>
+          booking.id === id ? data : booking
+        ),
+        currentBooking: state.currentBooking?.id === id ? data : state.currentBooking,
         isLoading: false,
       }));
       return { success: true, data };
@@ -212,7 +184,9 @@ const useBookingStore = create((set, get) => ({
     }
   },
 
-  // Đánh dấu không đến (Owner)
+  /**
+   * Đánh dấu không đến (Owner)
+   */
   markNoShow: async (id) => {
     set({ isLoading: true, error: null });
     try {
@@ -222,34 +196,88 @@ const useBookingStore = create((set, get) => ({
         bookings: state.bookings.map((booking) =>
           booking.id === id ? data : booking
         ),
+        ownerBookings: state.ownerBookings.map((booking) =>
+          booking.id === id ? data : booking
+        ),
+        currentBooking: state.currentBooking?.id === id ? data : state.currentBooking,
         isLoading: false,
       }));
       return { success: true, data };
     } catch (error) {
       const errorMessage =
-        error.response?.data?.message || "Đánh dấu no-show thất bại";
+        error.response?.data?.message || "Đánh dấu không đến thất bại";
       set({ error: errorMessage, isLoading: false });
       return { success: false, error: errorMessage };
     }
   },
 
-  // Lấy booking của owner
+  /**
+   * Lấy booking của customer
+   */
+  fetchMyBookings: async (params = {}) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await bookingService.getMyBookings(params);
+      const bookings = response.data || [];
+      set({ myBookings: bookings, isLoading: false });
+      return { success: true, data: bookings };
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Không thể tải booking của bạn";
+      set({ error: errorMessage, isLoading: false });
+      return { success: false, error: errorMessage };
+    }
+  },
+
+  /**
+   * Lấy booking của owner với phân trang
+   */
   fetchOwnerBookings: async (params = {}) => {
     set({ isLoading: true, error: null });
     try {
       const response = await bookingService.getOwnerBookings(params);
-      // backend returns ApiResponse { success, message, statusCode, data: [...] }
       const bookings = response?.data || [];
-      set({ bookings: bookings, isLoading: false });
-      return { success: true, data: bookings };
+      const pagination = {
+        pageIndex: response?.pageIndex || 1,
+        pageSize: response?.pageSize || 10,
+        totalRecords: response?.totalRecords || 0,
+        totalPages: response?.totalPages || 0,
+        hasPreviousPage: response?.hasPreviousPage || false,
+        hasNextPage: response?.hasNextPage || false,
+      };
+      set({ 
+        ownerBookings: bookings, 
+        ownerBookingsPagination: pagination,
+        isLoading: false 
+      });
+      return { success: true, data: bookings, pagination };
     } catch (error) {
       const errorMessage =
-        error.response?.data?.message || "Không thể tải booking của owner";
+        error.response?.data?.message || "Không thể tải danh sách booking";
       set({ error: errorMessage, isLoading: false });
       return { success: false, error: errorMessage };
     }
   },
 
+  /**
+   * Lấy chi tiết booking
+   */
+  fetchBookingById: async (id) => {
+    set({ isLoading: true, error: null });
+    try {
+      const response = await bookingService.getBookingById(id);
+      const booking = response.data;
+      set({ currentBooking: booking, isLoading: false });
+      return { success: true, data: response };
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "Không thể tải thông tin đặt sân";
+      set({ error: errorMessage, isLoading: false });
+      return { success: false, error: errorMessage };
+    }
+  },
+
+  // Utility actions
   clearError: () => set({ error: null }),
   clearCurrentBooking: () => set({ currentBooking: null }),
 }));

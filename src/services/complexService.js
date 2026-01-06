@@ -17,12 +17,32 @@ export const complexService = {
   },
 
   /**
+   * Lấy danh sách tất cả cụm sân cho Admin (bao gồm pending, rejected)
+   * @param {Object} params - { pageIndex, pageSize, status }
+   * @returns {Promise} Paged list of all complexes
+   */
+  getAllComplexesForAdmin: async (params = {}) => {
+    const response = await api.get("/complexes/admin/all", { params });
+    return response.data;
+  },
+
+  /**
    * Lấy chi tiết cụm sân theo ID
    * @param {string|number} id - Complex ID
    * @returns {Promise} Complex details
    */
   getComplexById: async (id) => {
     const response = await api.get(`/complexes/${id}`);
+    return response.data;
+  },
+
+  /**
+   * Admin only - Lấy chi tiết cụm sân với rating, review count, và images
+   * @param {string|number} id - Complex ID
+   * @returns {Promise} Admin complex details with rating, reviews, and images
+   */
+  getComplexAdminDetails: async (id) => {
+    const response = await api.get(`/complexes/${id}/admin-details`);
     return response.data;
   },
 
@@ -178,6 +198,37 @@ export const complexService = {
     const response = await api.patch(`/complexes/${id}/toggle-active`, isActive, {
       headers: { 'Content-Type': 'application/json' }
     });
+    return response.data;
+  },
+
+  /**
+   * Phê duyệt cụm sân (Admin only)
+   * @param {string|number} id - Complex ID
+   * @returns {Promise} Response
+   */
+  approveComplex: async (id) => {
+    const response = await api.patch(`/complexes/${id}/approve`);
+    return response.data;
+  },
+
+  /**
+   * Từ chối cụm sân (Admin only)
+   * @param {string|number} id - Complex ID
+   * @param {string} reason - Lý do từ chối (optional)
+   * @returns {Promise} Response
+   */
+  rejectComplex: async (id, reason = "") => {
+    const response = await api.patch(`/complexes/${id}/reject`, { reason });
+    return response.data;
+  },
+
+  /**
+   * Gửi lại yêu cầu phê duyệt cho cụm sân bị từ chối (Owner only)
+   * @param {string|number} id - Complex ID
+   * @returns {Promise} Response
+   */
+  resubmitComplex: async (id) => {
+    const response = await api.patch(`/complexes/${id}/resubmit`);
     return response.data;
   },
 };

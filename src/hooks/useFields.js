@@ -21,13 +21,14 @@ export default function useFields() {
   const toast = useToast();
 
   /**
-   * Lấy tất cả fields của owner
+   * Lấy tất cả fields của owner với filters
    */
   const fetchAllFields = useCallback(async (params = {}) => {
+    const { pageIndex = 1, pageSize = 10, filters = {} } = params;
     setLoading(true);
     setError(null);
     try {
-      const response = await fieldService.getMyFields(params);
+      const response = await fieldService.getMyFields(pageIndex, pageSize, filters);
       setFields(response.data || []);
       
       // Cập nhật pagination nếu có

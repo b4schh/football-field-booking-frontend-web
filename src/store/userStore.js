@@ -7,38 +7,34 @@ const useUserStore = create((set, get) => ({
   currentUser: null,
   isLoading: false,
   error: null,
-  pagination: {
-    page: 1,
-    limit: 10,
-    total: 0,
-    totalPages: 0,
-  },
+  
+  // Pagination states
+  pageIndex: 1,
+  pageSize: 10,
+  totalRecords: 0,
+  totalPages: 0,
+  hasNextPage: false,
+  hasPreviousPage: false,
 
   // Actions
-  fetchUsers: async (params = {}) => {
+  fetchUsers: async (pageIndex = 1, pageSize = 10, keyword = null, role = null, status = null) => {
     set({ isLoading: true, error: null });
     try {
-      const data = await userService.getUsers(params);
-
-      if (data.data) {
-        set({
-          users: data.data,
-          pagination: {
-            page: data.page || 1,
-            limit: data.limit || 10,
-            total: data.total || 0,
-            totalPages: data.totalPages || 0,
-          },
-          isLoading: false,
-        });
-      } else {
-        set({ users: data, isLoading: false });
-      }
-
-      return { success: true, data };
+      const response = await userService.getUsers(pageIndex, pageSize, keyword, role, status);
+      set({
+        users: response.data ?? [],
+        pageIndex: response.pageIndex,
+        pageSize: response.pageSize,
+        totalRecords: response.totalRecords,
+        totalPages: response.totalPages,
+        hasNextPage: response.hasNextPage,
+        hasPreviousPage: response.hasPreviousPage,
+        isLoading: false,
+      });
+      return { success: true };
     } catch (error) {
       const errorMessage =
-        error.response?.data?.message || "Không thể tải danh sách users";
+        error.response?.data?.message || "Không thể tải danh sách người dùng";
       set({ error: errorMessage, isLoading: false });
       return { success: false, error: errorMessage };
     }
@@ -121,35 +117,29 @@ const useUserStore = create((set, get) => ({
     }
   },
 
-  toggleUserBan: async (id, banned, reason = "") => {
+  updateUserStatus: async (id, status) => {
     set({ isLoading: true, error: null });
     try {
-      const data = await userService.toggleUserBan(id, banned, reason);
-      set((state) => ({
-        users: state.users.map((user) => (user.id === id ? data : user)),
-        isLoading: false,
-      }));
-      return { success: true, data };
+      await userService.updateUserStatus(id, status);
+      set({ isLoading: false });
+      return { success: true };
     } catch (error) {
       const errorMessage =
-        error.response?.data?.message || "Thao tác thất bại";
+        error.response?.data?.message || "Cập nhật trạng thái thất bại";
       set({ error: errorMessage, isLoading: false });
       return { success: false, error: errorMessage };
     }
   },
 
-  changeUserRole: async (id, role) => {
+  updateUserRole: async (id, roleId) => {
     set({ isLoading: true, error: null });
     try {
-      const data = await userService.changeUserRole(id, role);
-      set((state) => ({
-        users: state.users.map((user) => (user.id === id ? data : user)),
-        isLoading: false,
-      }));
-      return { success: true, data };
+      await userService.updateUserRole(id, roleId);
+      set({ isLoading: false });
+      return { success: true };
     } catch (error) {
       const errorMessage =
-        error.response?.data?.message || "Thay đổi role thất bại";
+        error.response?.data?.message || "Cập nhật role thất bại";
       set({ error: errorMessage, isLoading: false });
       return { success: false, error: errorMessage };
     }
@@ -158,15 +148,12 @@ const useUserStore = create((set, get) => ({
   createUser: async (userData) => {
     set({ isLoading: true, error: null });
     try {
-      const data = await userService.createUser(userData);
-      set((state) => ({
-        users: [...state.users, data],
-        isLoading: false,
-      }));
-      return { success: true, data };
+      const response = await userService.createUser(userData);
+      set({ isLoading: false });
+      return { success: true, data: response.data };
     } catch (error) {
       const errorMessage =
-        error.response?.data?.message || "Tạo user thất bại";
+        error.response?.data?.message || "Tạo người dùng thất bại";
       set({ error: errorMessage, isLoading: false });
       return { success: false, error: errorMessage };
     }

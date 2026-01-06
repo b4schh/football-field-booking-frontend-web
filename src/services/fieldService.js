@@ -29,11 +29,22 @@ export const fieldService = {
   },
 
   /**
-   * Lấy danh sách sân của mình (Owner) - có pagination
-   * @param {Object} params - Query parameters (pageIndex, pageSize)
+   * Lấy danh sách sân của mình (Owner) - có pagination và filters
+   * @param {number} pageIndex - Page number
+   * @param {number} pageSize - Items per page
+   * @param {Object} filters - Filter parameters (searchTerm, complexId, fieldSize, surfaceType, isActive)
    * @returns {Promise} Paged list of owner's fields
    */
-  getMyFields: async (params = {}) => {
+  getMyFields: async (pageIndex = 1, pageSize = 10, filters = {}) => {
+    const params = {
+      pageIndex,
+      pageSize,
+      ...(filters.searchTerm && { searchTerm: filters.searchTerm }),
+      ...(filters.complexId && { complexId: filters.complexId }),
+      ...(filters.fieldSize && { fieldSize: filters.fieldSize }),
+      ...(filters.surfaceType && { surfaceType: filters.surfaceType }),
+      ...(filters.isActive !== "" && { isActive: filters.isActive === "true" })
+    };
     const response = await api.get("/fields/owner/my-fields", { params });
     return response.data;
   },

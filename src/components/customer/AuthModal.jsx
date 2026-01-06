@@ -4,6 +4,7 @@ import { FiMail, FiLock, FiUser, FiPhone } from "react-icons/fi";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../../store";
 import { getRoleRedirectPath } from "../../utils/roleHelpers";
+import AccountBlockedModal from "../common/AccountBlockedModal";
 
 export default function AuthModal({ isOpen, onClose, onSuccess }) {
   const [mode, setMode] = useState("login"); // "login" or "register"
@@ -18,6 +19,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [blockedInfo, setBlockedInfo] = useState({ show: false, message: "", type: "banned" });
 
   const { login, register } = useAuthStore();
   const navigate = useNavigate();
@@ -112,7 +114,33 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
           onSuccess();
         }
       } else {
-        setErrors({ submit: result.error || "Đã xảy ra lỗi" });
+        // Kiểm tra nếu là lỗi account bị khóa (status 403)
+        const errorMessage = result.error || "Đã xảy ra lỗi";
+        
+        if (errorMessage.includes("bị khóa") || errorMessage.includes("Banned")) {
+          setBlockedInfo({
+            show: true,
+            message: errorMessage,
+            type: "banned"
+          });
+          handleClose(); // Đóng login modal
+        } else if (errorMessage.includes("chưa được kích hoạt") || errorMessage.includes("Inactive")) {
+          setBlockedInfo({
+            show: true,
+            message: errorMessage,
+            type: "inactive"
+          });
+          handleClose();
+        } else if (errorMessage.includes("đã bị xóa")) {
+          setBlockedInfo({
+            show: true,
+            message: errorMessage,
+            type: "deleted"
+          });
+          handleClose();
+        } else {
+          setErrors({ submit: errorMessage });
+        }
       }
     } catch (error) {
       setErrors({ submit: "Đã xảy ra lỗi, vui lòng thử lại" });
@@ -353,6 +381,14 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
           </div>
         </form>
       </div>
+
+      {/* Account Blocked Modal */}
+      <AccountBlockedModal
+        isOpen={blockedInfo.show}
+        onClose={() => setBlockedInfo({ show: false, message: "", type: "banned" })}
+        message={blockedInfo.message}
+        type={blockedInfo.type}
+      />
     </div>
   );
 }

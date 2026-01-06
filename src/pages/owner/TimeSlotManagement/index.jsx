@@ -10,6 +10,8 @@ import ToggleSwitch from "../../../components/owner/ToggleSwitch";
 import TimeSlotFormModal from "../../../components/owner/TimeSlotFormModal";
 import Modal from "../../../components/dashboard/Modal";
 import useTimeSlots from "../../../hooks/useTimeSlots";
+import useOwnerComplexes from "../../../hooks/useOwnerComplexes";
+import useFields from "../../../hooks/useFields";
 import timeSlotService from "../../../services/timeSlotService";
 import { useToast } from "../../../store/toastStore";
 import { formatTimeSpan } from "../../../utils/formatHelpers";
@@ -22,6 +24,8 @@ export default function TimeSlotManagement() {
   const navigate = useNavigate();
   const toast = useToast();
   const { timeSlots, loading, pagination, fetchOwnerTimeSlots } = useTimeSlots();
+  const { complexes, fetchComplexes } = useOwnerComplexes();
+  const { fields, fetchAllFields } = useFields();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
@@ -30,9 +34,40 @@ export default function TimeSlotManagement() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
+  // Temporary filter states (while user is typing/selecting)
+  const [filters, setFilters] = useState({
+    complexId: "",
+    fieldId: "",
+    timeSlot: "",
+    isActive: ""
+  });
+
+  // Applied filter states (actually used in API call)
+  const [appliedFilters, setAppliedFilters] = useState({
+    complexId: "",
+    fieldId: "",
+    timeSlot: "",
+    isActive: ""
+  });
+
   useEffect(() => {
-    fetchOwnerTimeSlots({ pageIndex: currentPage, pageSize });
-  }, [currentPage, pageSize, fetchOwnerTimeSlots]);
+    fetchOwnerTimeSlots({ 
+      pageIndex: currentPage, 
+      pageSize,
+      filters: {
+        complexId: appliedFilters.complexId,
+        fieldId: appliedFilters.fieldId,
+        isActive: appliedFilters.isActive
+      }
+    });
+  }, [currentPage, pageSize, appliedFilters, fetchOwnerTimeSlots]);
+
+  // Fetch all complexes and fields for filter dropdowns (only once on mount)
+  useEffect(() => {
+    fetchComplexes({ pageIndex: 1, pageSize: 1000 }); // Fetch all complexes
+    fetchAllFields({ pageIndex: 1, pageSize: 1000 }); // Fetch all fields
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -81,10 +116,24 @@ export default function TimeSlotManagement() {
     try {
       await timeSlotService.toggleTimeSlotActive(timeSlotId, isActive);
       toast.success(isActive ? "Đã kích hoạt khung giờ" : "Đã tắt khung giờ");
-      fetchOwnerTimeSlots({ pageIndex: currentPage, pageSize });
+      fetchOwnerTimeSlots({ 
+        pageIndex: currentPage, 
+        pageSize,
+        filters: {
+          complexId: appliedFilters.complexId,
+          fieldId: appliedFilters.fieldId,
+          isActive: appliedFilters.isActive
+        }
+      });
     } catch (error) {
       toast.error(error.response?.data?.message || "Cập nhật trạng thái thất bại");
     }
+  };
+
+  // Apply filters
+  const handleSearch = () => {
+    setAppliedFilters(filters);
+    setCurrentPage(1); // Reset to first page when applying filters
   };
 
   const openEditModal = (timeSlot) => {
@@ -101,6 +150,35 @@ export default function TimeSlotManagement() {
     // Navigate to field detail page
     navigate(`/owner/complexes/${timeSlot.complexId}/fields/${timeSlot.fieldId}`);
   };
+
+  // Get unique values for filters from full datasets
+  const uniqueComplexes = complexes || [];
+  
+  // Filter fields based on selected complex
+  const filteredFieldsByComplex = filters.complexId 
+    ? (fields || []).filter(field => field.complexId === parseInt(filters.complexId))
+    : [];
+  
+  // Note: Time slot filter removed as it's not efficient to filter by specific time ranges server-side
+
+  // Reset filters
+  const handleResetFilters = () => {
+    setFilters({
+      complexId: "",
+      fieldId: "",
+      timeSlot: "",
+      isActive: ""
+    });
+    setAppliedFilters({
+      complexId: "",
+      fieldId: "",
+      timeSlot: "",
+      isActive: ""
+    });
+    setCurrentPage(1); // Reset to first page when clearing filters
+  };
+
+  const hasActiveFilters = appliedFilters.complexId || appliedFilters.fieldId || appliedFilters.isActive !== "";
 
   // Table columns
   const columns = [
@@ -211,7 +289,6 @@ export default function TimeSlotManagement() {
         <PageHeader 
           title="Quản lý khung giờ"
           breadcrumbs={[
-            { label: "Trang chủ", path: "/owner" },
             { label: "Quản lý khung giờ" }
           ]}
         />
@@ -225,7 +302,6 @@ export default function TimeSlotManagement() {
       <PageHeader 
         title="Quản lý khung giờ"
         breadcrumbs={[
-          { label: "Trang chủ", path: "/owner" },
           { label: "Quản lý khung giờ" }
         ]}
         actions={
@@ -257,22 +333,118 @@ export default function TimeSlotManagement() {
           />
         </div>
       ) : (
-        <div className="bg-white rounded-xl shadow-md overflow-hidden">
-          <DataTable 
-            columns={columns} 
-            data={timeSlots}
-            onRowClick={handleRowClick}
-          />
-          
-          <Pagination
-            currentPage={pagination.pageIndex}
-            totalPages={pagination.totalPages}
-            pageSize={pagination.pageSize}
-            totalRecords={pagination.totalRecords}
-            onPageChange={handlePageChange}
-            onPageSizeChange={handlePageSizeChange}
-          />
-        </div>
+        <>
+          {/* Filters */}
+          <div className="bg-white rounded-xl shadow-md p-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* Complex Filter */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Cụm sân
+                </label>
+                <select
+                  value={filters.complexId}
+                  onChange={(e) => {
+                    const newComplexId = e.target.value;
+                    setFilters(prev => ({ 
+                      ...prev, 
+                      complexId: newComplexId,
+                      fieldId: "" // Reset field when complex changes
+                    }));
+                  }}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+                >
+                  <option value="">Tất cả cụm sân</option>
+                  {uniqueComplexes.map(complex => (
+                    <option key={complex.id} value={complex.id}>
+                      {complex.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Field Filter */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Sân
+                </label>
+                <select
+                  value={filters.fieldId}
+                  onChange={(e) => setFilters(prev => ({ ...prev, fieldId: e.target.value }))}
+                  disabled={!filters.complexId}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
+                >
+                  <option value="">
+                    {filters.complexId ? "Tất cả sân" : "Vui lòng chọn cụm sân trước"}
+                  </option>
+                  {filteredFieldsByComplex.map(field => (
+                    <option key={field.id} value={field.id}>
+                      {field.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Active Status Filter */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Trạng thái
+                </label>
+                <select
+                  value={filters.isActive}
+                  onChange={(e) => setFilters(prev => ({ ...prev, isActive: e.target.value }))}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-transparent"
+                >
+                  <option value="">Tất cả trạng thái</option>
+                  <option value="true">Đang hoạt động</option>
+                  <option value="false">Tạm ngưng</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Search and Reset Buttons */}
+            <div className="mt-4 flex justify-between items-center">
+              {hasActiveFilters && (
+                <p className="text-sm text-gray-600">
+                  Hiển thị <span className="font-semibold">{pagination.totalRecords}</span> khung giờ
+                </p>
+              )}
+              <div className="flex gap-3 ml-auto">
+                {hasActiveFilters && (
+                  <button
+                    onClick={handleResetFilters}
+                    className="px-4 py-2 text-sm text-slate-600 hover:text-slate-800 hover:bg-slate-50 rounded-lg transition-colors font-medium border border-gray-300"
+                  >
+                    Xóa bộ lọc
+                  </button>
+                )}
+                <button
+                  onClick={handleSearch}
+                  className="px-6 py-2 bg-slate-600 text-white rounded-lg hover:bg-slate-700 transition-colors font-medium"
+                >
+                  Tìm kiếm
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-md overflow-hidden">
+            <DataTable 
+              columns={columns} 
+              data={timeSlots}
+              onRowClick={handleRowClick}
+            />
+            
+            <Pagination
+              currentPage={pagination.pageIndex}
+              totalPages={pagination.totalPages}
+              pageSize={pagination.pageSize}
+              totalRecords={pagination.totalRecords}
+              onPageChange={handlePageChange}
+              onPageSizeChange={handlePageSizeChange}
+            />
+          </div>
+        </>
       )}
 
       {/* Edit Modal */}

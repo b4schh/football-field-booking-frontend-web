@@ -170,12 +170,53 @@ api.interceptors.response.use(
       }
     }
 
+    // Xử lý lỗi 403 - Account bị khóa/inactive/deleted
+    if (error.response?.status === 403) {
+      const errorMessage = error.response?.data?.message || "";
+      
+      // Check if this is an account status issue (banned/inactive/deleted)
+      const isAccountStatusIssue = 
+        errorMessage.includes("bị khóa") || 
+        errorMessage.includes("chưa được kích hoạt") || 
+        errorMessage.includes("đã bị xóa");
+      
+      if (isAccountStatusIssue) {
+        console.error("⛔ Account status issue detected - logging out user");
+        
+        // Logout user
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        localStorage.removeItem("auth-storage");
+        
+        // Stop token monitor
+        if (typeof window !== 'undefined' && window.tokenMonitor) {
+          window.tokenMonitor.stop();
+        }
+        
+        // Dispatch custom event để các component có thể lắng nghe
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('accountBlocked', {
+            detail: {
+              message: errorMessage,
+              status: error.response.status
+            }
+          }));
+        }
+        
+        // Redirect to home page after a short delay
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 100);
+        
+        return Promise.reject(error);
+      }
+      
+      console.error("Bạn không có quyền truy cập tài nguyên này");
+    }
+    
     // Xử lý các lỗi khác
     if (error.response) {
       switch (error.response.status) {
-        case 403:
-          console.error("Bạn không có quyền truy cập tài nguyên này");
-          break;
         case 404:
           console.error("Không tìm thấy tài nguyên");
           break;

@@ -1,167 +1,130 @@
-import { MdStore, MdSportsSoccer, MdBookOnline, MdAttachMoney } from "react-icons/md";
-import PageHeader from "../../../components/dashboard/PageHeader";
-import CardStat from "../../../components/dashboard/CardStat";
-import DataTable from "../../../components/dashboard/DataTable";
-import LoadingSkeleton from "../../../components/dashboard/LoadingSkeleton";
-import EmptyState from "../../../components/dashboard/EmptyState";
+import { motion } from "framer-motion";
+import { MdRefresh } from "react-icons/md";
 import useOwnerDashboard from "../../../hooks/useOwnerDashboard";
+import PageHeader from "../../../components/dashboard/PageHeader";
+import StatCard from "../../../components/owner/dashboard/StatCard";
+import RevenueChart from "../../../components/owner/dashboard/RevenueChart";
+import RecentBookings from "../../../components/owner/dashboard/RecentBookings";
+import UpcomingBookings from "../../../components/owner/dashboard/UpcomingBookings";
+import TopPeakHours from "../../../components/owner/dashboard/TopPeakHours";
+import ComplexesOverview from "../../../components/owner/dashboard/ComplexesOverview";
 
 export default function OwnerDashboard() {
-  const { stats, recentBookings, loading, error } = useOwnerDashboard();
-
-  // Format currency
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('vi-VN', {
-      style: 'currency',
-      currency: 'VND'
-    }).format(amount);
-  };
-
-  // Format date
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('vi-VN');
-  };
-
-  // Get booking status label
-  const getBookingStatusLabel = (status) => {
-    const statusMap = {
-      0: { label: "Chờ thanh toán", color: "bg-yellow-100 text-yellow-800" },
-      1: { label: "Chờ duyệt", color: "bg-blue-100 text-blue-800" },
-      2: { label: "Đã xác nhận", color: "bg-green-100 text-green-800" },
-      3: { label: "Đã từ chối", color: "bg-red-100 text-red-800" },
-      4: { label: "Đã hủy", color: "bg-gray-100 text-gray-800" },
-      5: { label: "Hoàn thành", color: "bg-green-100 text-green-800" },
-      6: { label: "Hết hạn", color: "bg-gray-100 text-gray-800" },
-      7: { label: "Không đến", color: "bg-red-100 text-red-800" },
-    };
-    return statusMap[status] || { label: "Không xác định", color: "bg-gray-100 text-gray-800" };
-  };
-
-  // Table columns for recent bookings
-  const columns = [
-    {
-      key: "complexName",
-      label: "Cụm sân",
-      render: (row) => row.complexName || "-",
-    },
-    {
-      key: "fieldName",
-      label: "Sân",
-      render: (row) => row.fieldName || "-",
-    },
-    {
-      key: "customerName",
-      label: "Khách hàng",
-      render: (row) => row.customerName || "-",
-    },
-    {
-      key: "bookingDate",
-      label: "Ngày đặt",
-      render: (row) => formatDate(row.bookingDate),
-    },
-    {
-      key: "timeSlot",
-      label: "Khung giờ",
-      render: (row) => `${row.startTime?.substring(0, 5)} - ${row.endTime?.substring(0, 5)}`,
-    },
-    {
-      key: "totalAmount",
-      label: "Tổng tiền",
-      render: (row) => formatCurrency(row.totalAmount),
-    },
-    {
-      key: "status",
-      label: "Trạng thái",
-      render: (row) => {
-        const status = getBookingStatusLabel(row.bookingStatus);
-        return (
-          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${status.color}`}>
-            {status.label}
-          </span>
-        );
-      },
-    },
-  ];
+  const {
+    stats,
+    recentBookings,
+    upcomingBookings,
+    topFields,
+    revenueChart,
+    bookingsByHour,
+    complexes,
+    loading,
+    revenueLoading,
+    error,
+    refreshData,
+    onPeriodChange,
+    currentPeriod,
+    weekCount,
+    onWeekCountChange,
+  } = useOwnerDashboard();
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-800">
-        {error}
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="bg-red-50 border border-red-200 rounded-xl p-8 text-center">
+            <h3 className="text-lg font-semibold text-red-900 mb-2">
+              Lỗi tải dữ liệu
+            </h3>
+            <p className="text-red-700 mb-4">{error}</p>
+            <button
+              onClick={refreshData}
+              className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            >
+              Thử lại
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
-      <PageHeader 
-        title="Dashboard" 
-        breadcrumbs={[
-          { label: "Owner", path: "/owner" },
-          { label: "Dashboard" }
-        ]}
-      />
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-[1600px] mx-auto p-6 space-y-6">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <PageHeader
+            title="Dashboard"
+            actions={
+              <button
+                onClick={refreshData}
+                disabled={loading}
+                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 text-gray-700"
+              >
+                <MdRefresh className={loading ? "animate-spin" : ""} />
+                <span className="text-sm font-medium">Làm mới</span>
+              </button>
+            }
+          />
+        </motion.div>
 
-      {/* Stats Cards */}
-      {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {[...Array(4)].map((_, i) => (
-            <LoadingSkeleton key={i} type="card" />
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <CardStat
-            icon={MdStore}
-            title="Tổng cụm sân"
-            value={stats.totalComplexes}
-            color="blue"
-          />
-          <CardStat
-            icon={MdSportsSoccer}
-            title="Tổng sân"
-            value={stats.totalFields}
-            color="green"
-          />
-          <CardStat
-            icon={MdBookOnline}
-            title="Đặt sân chờ duyệt"
-            value={stats.pendingBookings}
-            color="yellow"
-          />
-          <CardStat
-            icon={MdAttachMoney}
+        {/* Stats Grid - 4 cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <StatCard
             title="Doanh thu"
-            value={formatCurrency(stats.totalRevenue)}
-            color="purple"
+            value={`${(stats.totalRevenue / 1000000).toFixed(1)}M`}
+            subtitle={`Hôm nay: ${(stats.todayRevenue / 1000).toFixed(0)}K`}
+          />
+
+          <StatCard
+            title="Booking"
+            value={stats.todayBookings}
+            subtitle={`Hoàn thành: ${stats.completedBookings}`}
+          />
+
+          <StatCard
+            title="Chờ duyệt"
+            value={stats.pendingBookings}
+            subtitle={`${(stats.pendingRevenue / 1000).toFixed(0)}K chờ thu`}
+          />
+
+          <StatCard
+            title="Tỷ lệ sử dụng"
+            value={`${stats.occupancyRate.toFixed(0)}%`}
+            subtitle={`${stats.activeFields}/${stats.totalFields} sân`}
           />
         </div>
-      )}
 
-      {/* Recent Bookings */}
-      <div>
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Đặt sân gần đây</h2>
-        
-        {loading ? (
-          <LoadingSkeleton type="table" rows={5} />
-        ) : recentBookings.length > 0 ? (
-          <DataTable
-            columns={columns}
-            data={recentBookings}
-            currentPage={1}
-            totalPages={1}
-            onPageChange={() => {}}
-            hasNextPage={false}
-            hasPreviousPage={false}
-          />
-        ) : (
-          <div className="bg-white rounded-xl shadow-md">
-            <EmptyState
-              icon={MdBookOnline}
-              title="Chưa có đặt sân nào"
-              message="Các đặt sân của khách hàng sẽ hiển thị tại đây"
+        {/* Main Content - Bento Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Left Column - 8/12 */}
+          <div className="lg:col-span-8 space-y-6">
+            <RevenueChart
+              data={revenueChart}
+              loading={revenueLoading}
+              onPeriodChange={onPeriodChange}
+              currentPeriod={currentPeriod}
+              weekCount={weekCount}
+              onWeekCountChange={onWeekCountChange}
             />
           </div>
-        )}
+
+          {/* Right Column - 4/12 */}
+          <div className="lg:col-span-4 space-y-6">
+            <UpcomingBookings bookings={upcomingBookings} loading={loading} />
+            {/* <TopPeakHours peakHours={bookingsByHour} loading={loading} /> */}
+          </div>
+        </div>
+
+        {/* Bottom Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <RecentBookings bookings={recentBookings} loading={loading} />
+          <ComplexesOverview complexes={complexes} loading={loading} />
+        </div>
       </div>
     </div>
   );

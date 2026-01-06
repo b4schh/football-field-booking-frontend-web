@@ -1,0 +1,249 @@
+================================================================================
+                    TÓM TẮT DỰ ÁN FRONTEND - FOOTBALL FIELD BOOKING
+================================================================================
+
+📌 THÔNG TIN CHUNG:
+- Dự án: Hệ thống đặt sân bóng đá
+- Tech Stack: React 19 + Vite + TailwindCSS + Zustand (state management)
+- Routing: React Router v7
+- API Integration: Axios
+- Charts: Recharts (cho dashboard)
+- Animations: Framer Motion
+
+================================================================================
+
+📂 CẤU TRÚC THƯ MỤC CHÍNH:
+
+/src
+│
+├── /api/                       → Cấu hình API endpoints và base URLs
+│
+├── /assets/                    → Tài nguyên tĩnh
+│   ├── /fonts/                 → Fonts (Inter)
+│   └── /img/                   → Hình ảnh
+│
+├── /components/                → Các component React tái sử dụng
+│   ├── ProtectedRoute.jsx      → Component bảo vệ route theo quyền
+│   ├── /admin/                 → Components cho Admin (quản lý user, role, permission)
+│   ├── /common/                → Components dùng chung (Header, Footer, Modal, Toast...)
+│   ├── /customer/              → Components cho Customer (search, booking, review...)
+│   ├── /dashboard/             → Components cho dashboard (charts, stats...)
+│   └── /owner/                 → Components cho Owner (quản lý sân, complex...)
+│
+├── /context/                   → React Context (nếu có)
+│
+├── /hooks/                     → Custom React Hooks
+│   ├── useAuth.js              → Hook xử lý authentication
+│   ├── useAdminComplexes.js    → Hook quản lý complexes cho admin
+│   ├── useOwnerComplexes.js    → Hook quản lý complexes cho owner
+│   ├── useOwnerDashboard.js    → Hook lấy dữ liệu dashboard cho owner
+│   ├── useFields.js            → Hook quản lý fields (sân)
+│   ├── useTimeSlots.js         → Hook quản lý time slots
+│   └── useNotificationSSE.js   → Hook nhận notification real-time qua SSE
+│
+├── /layouts/                   → Layout components
+│   ├── AdminLayout.jsx         → Layout cho Admin
+│   ├── CustomerLayout.jsx      → Layout cho Customer
+│   ├── OwnerLayout.jsx         → Layout cho Owner
+│   └── /dashboard/             → Layout cho dashboard pages
+│
+├── /pages/                     → Các trang chính của ứng dụng
+│   ├── Home.jsx                → Trang chủ
+│   ├── NotFound.jsx            → Trang 404
+│   ├── Unauthorized.jsx        → Trang không có quyền truy cập
+│   │
+│   ├── /admin/                 → Pages cho Admin
+│   │   ├── AdminDashboard.jsx              → Dashboard tổng quan hệ thống
+│   │   ├── /UserManagement/                → Quản lý users (list, create, edit, block)
+│   │   ├── /RoleManagement/                → Quản lý roles (CRUD, view permissions)
+│   │   ├── /PermissionManagement/          → Quản lý permissions (CRUD)
+│   │   ├── /AdminComplexes/                → Xem danh sách tất cả complexes
+│   │   └── /ComplexManagement/             → Quản lý chi tiết complex
+│   │       ├── index.jsx                   → List complexes
+│   │       ├── ComplexDetail.jsx           → Chi tiết complex (view, edit, delete)
+│   │       └── FieldDetail.jsx             → Chi tiết field trong complex
+│   │
+│   ├── /customer/              → Pages cho Customer
+│   │   ├── CustomerProfile.jsx             → Xem/chỉnh sửa profile cá nhân
+│   │   ├── ComplexDetailPage.jsx           → Xem chi tiết sân, chọn time slot
+│   │   ├── BookingConfirmation.jsx         → Xác nhận thông tin đặt sân
+│   │   ├── PaymentUpload.jsx               → Upload ảnh chuyển khoản/thanh toán
+│   │   ├── MyBookings.jsx                  → Lịch sử đặt sân của customer
+│   │   └── Favorites.jsx                   → Danh sách sân yêu thích
+│   │
+│   └── /owner/                 → Pages cho Owner
+│       ├── /OwnerDashboard/                → Dashboard doanh thu & thống kê
+│       ├── /ComplexManagement/             → Quản lý complexes của owner
+│       │   ├── index.jsx                   → List complexes
+│       │   └── ComplexDetail.jsx           → CRUD complex, upload ảnh
+│       ├── /FieldManagement/               → Quản lý fields
+│       │   ├── index.jsx                   → List fields trong complex
+│       │   └── FieldDetail.jsx             → CRUD field, set giá
+│       ├── /TimeSlotManagement/            → Quản lý time slots và giá theo field
+│       ├── /BookingManagement/             → Quản lý bookings
+│       │   ├── index.jsx                   → List bookings (filter theo status)
+│       │   └── BookingDetail.jsx           → Chi tiết booking, xác nhận thanh toán
+│       ├── /ReviewManagement/              → Xem và quản lý reviews khách hàng
+│       └── ManageFields.jsx                → (Legacy) Quản lý fields
+│
+├── /router/                    → Cấu hình routing
+│   ├── AdminRoutes.jsx         → Routes cho Admin
+│   └── OwnerRoutes.jsx         → Routes cho Owner
+│
+├── /services/                  → Services gọi API
+│   ├── api.js                  → Axios instance với interceptor
+│   ├── authService.js          → API authentication (login, register, refresh token)
+│   ├── userService.js          → API quản lý users
+│   ├── roleService.js          → API quản lý roles
+│   ├── permissionService.js    → API quản lý permissions
+│   ├── complexService.js       → API quản lý complexes (cụm sân)
+│   ├── complexImageService.js  → API upload/manage hình ảnh complex
+│   ├── fieldService.js         → API quản lý fields (sân)
+│   ├── timeSlotService.js      → API quản lý time slots
+│   ├── bookingService.js       → API đặt sân và quản lý bookings
+│   ├── reviewService.js        → API đánh giá sân
+│   ├── favoriteService.js      → API yêu thích sân
+│   ├── locationService.js      → API lấy tỉnh/huyện/xã
+│   ├── dashboardApi.js         → API lấy dữ liệu dashboard
+│   ├── notificationService.js  → API notification
+│   └── tokenMonitor.js         → Monitor token expiry và auto refresh
+│
+├── /store/                     → Zustand stores (state management)
+│   ├── authStore.js            → State authentication & user info
+│   ├── authModalStore.js       → State modal login/register
+│   ├── userStore.js            → State quản lý users (admin)
+│   ├── permissionStore.js      → State quản lý permissions (admin)
+│   ├── complexStore.js         → State quản lý complexes
+│   ├── complexImageStore.js    → State quản lý hình ảnh complex
+│   ├── fieldStore.js           → State quản lý fields
+│   ├── timeSlotStore.js        → State quản lý time slots
+│   ├── bookingStore.js         → State quản lý bookings
+│   ├── bookingDraftStore.js    → State lưu booking draft tạm thời
+│   ├── reviewStore.js          → State quản lý reviews
+│   ├── favoriteStore.js        → State quản lý favorites
+│   ├── locationStore.js        → State quản lý location (province, district, ward)
+│   ├── notificationStore.js    → State quản lý notifications
+│   ├── toastStore.js           → State quản lý toast messages
+│   └── /dashboard/             → Stores cho dashboard data
+│
+├── /utils/                     → Utility functions
+│   ├── apiHelpers.js           → Helper functions cho API calls
+│   ├── formatHelpers.js        → Helper format date, currency, etc.
+│   ├── roleHelpers.js          → Helper check roles (ADMIN, OWNER, CUSTOMER)
+│   ├── tokenHelpers.js         → Helper xử lý JWT tokens
+│   ├── imageHelper.js          → Helper xử lý images
+│   └── imageCompressor.js      → Helper nén ảnh trước khi upload
+│
+├── App.jsx                     → Main App component với routing
+├── main.jsx                    → Entry point, render React app
+├── App.css                     → Styles cho App
+└── index.css                   → Global styles + Tailwind imports
+
+================================================================================
+
+📄 FILES CẤU HÌNH QUAN TRỌNG:
+
+/
+├── .env                        → Environment variables (API URLs, keys)
+├── .env.example                → Template cho .env
+├── package.json                → Dependencies và scripts
+├── vite.config.js              → Cấu hình Vite build tool
+├── tailwind.config.js          → Cấu hình TailwindCSS
+├── postcss.config.js           → Cấu hình PostCSS
+├── eslint.config.js            → Cấu hình ESLint
+└── index.html                  → HTML entry point
+
+================================================================================
+
+📚 THƯ MỤC DOCS:
+
+/docs/
+├── api_spec_new.md                     → Specification API mới
+├── CUSTOMER_USER_GUIDE.txt             → Hướng dẫn user cho customer
+├── DASHBOARD_API_REQUIREMENTS.md       → Requirements cho Dashboard API
+├── IMPLEMENTATION_SUMMARY.md           → Tóm tắt implementation
+├── PAYMENT_FLOW_IMPLEMENTATION.md      → Flow thanh toán
+├── QR_STORAGE_RECOMMENDATION.md        → Gợi ý lưu trữ QR code
+├── REFRESH_TOKEN_FRONTEND.md           → Cơ chế refresh token frontend
+└── response.json                       → Sample API responses
+
+================================================================================
+
+🎯 CHỨC NĂNG CHÍNH CỦA HỆ THỐNG:
+
+1. CUSTOMER (Khách hàng):
+   - Đăng ký, đăng nhập, quản lý profile
+   - Tìm kiếm và xem chi tiết sân bóng
+   - Đặt sân theo time slot
+   - Upload ảnh thanh toán
+   - Xem lịch sử đặt sân
+   - Đánh giá và review sân
+   - Yêu thích sân
+   - Nhận notification real-time
+
+2. OWNER (Chủ sân):
+   - Dashboard theo dõi doanh thu, booking
+   - Quản lý complexes (cụm sân)
+   - Quản lý fields (sân con trong complex)
+   - Quản lý time slots và giá
+   - Xem và xử lý bookings
+   - Xác nhận thanh toán
+   - Quản lý hình ảnh complex
+
+3. ADMIN (Quản trị viên):
+   - Quản lý users (create, update, block, delete)
+   - Quản lý roles và permissions (RBAC)
+   - Assign roles/permissions cho users
+   - Quản lý toàn bộ complexes trong hệ thống
+   - Dashboard tổng quan
+
+================================================================================
+
+🔐 QUYỀN VÀ BẢO MẬT:
+
+- Role-Based Access Control (RBAC):
+  • ADMIN: Toàn quyền hệ thống
+  • OWNER: Quản lý sân của mình
+  • CUSTOMER: Đặt sân và sử dụng dịch vụ
+
+- Authentication:
+  • JWT Access Token (short-lived)
+  • Refresh Token (long-lived)
+  • Auto refresh token khi hết hạn
+  • Protected routes theo role
+
+- Features:
+  • SSE (Server-Sent Events) cho real-time notifications
+  • Token monitor tự động refresh
+  • Account blocked detection
+
+================================================================================
+
+🚀 COMMANDS:
+
+npm run dev          → Chạy development server
+npm run build        → Build production
+npm run preview      → Preview production build
+npm run lint         → Chạy ESLint
+
+================================================================================
+
+🔗 LIÊN KẾT VỚI BACKEND:
+
+- Backend project: do-an-server-nang-cao (ASP.NET Core)
+- API communication: Axios với interceptors
+- Base URL: Lấy từ .env file
+
+================================================================================
+
+📝 GHI CHÚ:
+
+- Dự án sử dụng Zustand thay vì Redux để quản lý state (nhẹ hơn, dễ dùng hơn)
+- UI được build với TailwindCSS và Framer Motion cho animations
+- Charts sử dụng Recharts library
+- Date handling với date-fns
+- Icons từ react-icons
+
+================================================================================
+                                    HẾT
+================================================================================

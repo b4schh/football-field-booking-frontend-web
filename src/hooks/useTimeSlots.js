@@ -145,15 +145,15 @@ export default function useTimeSlots() {
   }, [toast, fetchTimeSlotsByField]);
 
   /**
-   * Lấy tất cả timeslots của owner (with pagination)
+   * Lấy tất cả timeslots của owner (with pagination and filters)
    */
   const fetchOwnerTimeSlots = useCallback(async (params = {}) => {
-    const { pageIndex = 1, pageSize = 10 } = params;
+    const { pageIndex = 1, pageSize = 10, filters = {} } = params;
     
     setLoading(true);
     setError(null);
     try {
-      const response = await timeSlotService.getOwnerTimeSlots(pageIndex, pageSize);
+      const response = await timeSlotService.getOwnerTimeSlots(pageIndex, pageSize, filters);
       setTimeSlots(response.data || []);
       setPagination({
         pageIndex: response.pageIndex || pageIndex,

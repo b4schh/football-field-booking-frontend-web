@@ -36,6 +36,15 @@ export const timeSlotService = {
   },
 
   /**
+   * Alias for getTimeSlotsByFieldId
+   * @param {string|number} fieldId - Field ID
+   * @returns {Promise} List of timeslots
+   */
+  getTimeSlotsByField: async (fieldId) => {
+    return timeSlotService.getTimeSlotsByFieldId(fieldId);
+  },
+
+  /**
    * Tạo khung giờ mới
    * @param {Object} timeSlotData - { fieldId, startTime, endTime }
    * @returns {Promise} Created timeslot
@@ -94,15 +103,23 @@ export const timeSlotService = {
   },
 
   /**
-   * Lấy tất cả timeslots của owner (with pagination)
+   * Lấy tất cả timeslots của owner (with pagination and filters)
    * @param {number} pageIndex - Page number (default 1)
    * @param {number} pageSize - Items per page (default 10)
+   * @param {Object} filters - Filter parameters (searchTerm, complexId, fieldId, isActive)
    * @returns {Promise} Paged timeslots của owner
    */
-  getOwnerTimeSlots: async (pageIndex = 1, pageSize = 10) => {
-    const response = await api.get(`/timeslots/owner/my-time-slots`, {
-      params: { pageIndex, pageSize }
-    });
+  getOwnerTimeSlots: async (pageIndex = 1, pageSize = 10, filters = {}) => {
+    const params = {
+      pageIndex,
+      pageSize,
+      ...(filters.searchTerm && { searchTerm: filters.searchTerm }),
+      ...(filters.complexId && { complexId: filters.complexId }),
+      ...(filters.fieldId && { fieldId: filters.fieldId }),
+      ...(filters.isActive !== undefined && filters.isActive !== "" && { isActive: filters.isActive === "true" || filters.isActive === true })
+    };
+    
+    const response = await api.get(`/timeslots/owner/my-time-slots`, { params });
     return response.data;
   },
 };

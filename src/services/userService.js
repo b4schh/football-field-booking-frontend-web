@@ -7,11 +7,19 @@ import api from "./api";
 
 export const userService = {
   /**
-   * Lấy danh sách users (Admin)
-   * @param {Object} params - Query parameters
-   * @returns {Promise} List of users
+   * Lấy danh sách users với phân trang và filter (Admin)
+   * @param {number} pageIndex - Page number (default: 1)
+   * @param {number} pageSize - Page size (default: 10)
+   * @param {string} keyword - Search keyword (optional)
+   * @param {string} role - Filter by role (optional)
+   * @param {number} status - Filter by status (optional)
+   * @returns {Promise} Paginated list of users
    */
-  getUsers: async (params = {}) => {
+  getUsers: async (pageIndex = 1, pageSize = 10, keyword = null, role = null, status = null) => {
+    const params = { pageIndex, pageSize };
+    if (keyword) params.keyword = keyword;
+    if (role) params.role = role;
+    if (status !== null && status !== undefined) params.status = status;
     const response = await api.get("/users", { params });
     return response.data;
   },
@@ -72,25 +80,24 @@ export const userService = {
   },
 
   /**
-   * Cấm/Mở cấm user (Admin)
+   * Cập nhật trạng thái user (Ban/Unban) (Admin)
    * @param {string|number} id - User ID
-   * @param {boolean} banned - true: cấm, false: mở cấm
-   * @param {string} reason - Lý do
+   * @param {number} status - Status (0: Inactive, 1: Active, 2: Banned)
    * @returns {Promise} Updated user
    */
-  toggleUserBan: async (id, banned, reason = "") => {
-    const response = await api.put(`/users/${id}/ban`, { banned, reason });
+  updateUserStatus: async (id, status) => {
+    const response = await api.patch(`/users/${id}/status`, { status });
     return response.data;
   },
 
   /**
-   * Thay đổi role user (Admin)
+   * Cập nhật role user (Admin)
    * @param {string|number} id - User ID
-   * @param {string} role - New role (customer, owner, admin)
+   * @param {number} roleId - Role ID
    * @returns {Promise} Updated user
    */
-  changeUserRole: async (id, role) => {
-    const response = await api.patch(`/users/${id}/role`, { role });
+  updateUserRole: async (id, roleId) => {
+    const response = await api.patch(`/users/${id}/role`, { roleId });
     return response.data;
   },
 
@@ -108,8 +115,8 @@ export const userService = {
    * Lấy thống kê user (Admin)
    * @returns {Promise} User statistics
    */
-  getUserStats: async () => {
-    const response = await api.get("/users/stats");
+  getUserStatistics: async () => {
+    const response = await api.get("/users/statistics");
     return response.data;
   },
 };

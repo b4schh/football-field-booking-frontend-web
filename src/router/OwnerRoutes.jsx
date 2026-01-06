@@ -3,7 +3,7 @@ import RoleBasedLayout from "../components/dashboard/RoleBasedLayout";
 import { ROLES } from "../utils/roleHelpers";
 
 // Import pages
-import OwnerDashboardPage from "../pages/owner/OwnerDashboard";
+import OwnerDashboardPage from "../pages/owner/OwnerDashboard/";
 import FieldManagement from "../pages/owner/FieldManagement";
 import ComplexManagement from "../pages/owner/ComplexManagement";
 import ComplexDetail from "../pages/owner/ComplexManagement/ComplexDetail";
@@ -12,6 +12,7 @@ import TimeSlotManagement from "../pages/owner/TimeSlotManagement";
 import ComplexSetupWizard from "../components/owner/ComplexSetupWizard";
 import OwnerBookingManagement from "../pages/owner/BookingManagement";
 import BookingDetail from "../pages/owner/BookingManagement/BookingDetail";
+import ReviewManagement from "../pages/owner/ReviewManagement";
 
 export default function OwnerRoutes() {
   return (
@@ -32,11 +33,14 @@ export default function OwnerRoutes() {
         {/* TimeSlot Management Routes */}
         <Route path="timeslots" element={<TimeSlotManagement />} />
         
+        {/* Booking Management Routes */}
         <Route path="bookings" element={<OwnerBookingManagement/>} />
         <Route path="bookings/:id" element={<BookingDetail/>} />
 
+        {/* Review Management Routes */}
+        <Route path="reviews" element={<ReviewManagement />} />
+
         {/* Các routes khác sẽ được thêm sau:
-        <Route path="bookings" element={...} />
         <Route path="images" element={...} />
         <Route path="settings" element={...} />
         */}

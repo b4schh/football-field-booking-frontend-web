@@ -142,6 +142,38 @@ export const unvoteHelpful = async (reviewId) => {
   return response.data;
 };
 
+/**
+ * Lấy danh sách review của owner (tất cả review từ các complex của owner)
+ * @param {number} pageIndex - Số trang
+ * @param {number} pageSize - Số lượng mỗi trang
+ * @param {object} filters - Filters (complexId, rating, isVisible)
+ * @returns {Promise} Paged list of owner's reviews
+ */
+export const getOwnerReviews = async (pageIndex = 1, pageSize = 10, filters = {}) => {
+  const params = {
+    pageIndex,
+    pageSize,
+    ...(filters.complexId && { complexId: filters.complexId }),
+    ...(filters.rating && { rating: filters.rating }),
+    ...(filters.isVisible !== "" && { isVisible: filters.isVisible === "true" })
+  };
+  const response = await api.get("/reviews/owner/my-reviews", { params });
+  return response.data;
+};
+
+/**
+ * Owner ẩn/hiện review (admin permission)
+ * @param {number} reviewId - ID của review
+ * @param {boolean} isVisible - Trạng thái hiển thị
+ * @returns {Promise} Response xác nhận
+ */
+export const toggleReviewVisibility = async (reviewId, isVisible) => {
+  const response = await api.patch(`/reviews/admin/${reviewId}/visibility`, isVisible, {
+    headers: { 'Content-Type': 'application/json' }
+  });
+  return response.data;
+};
+
 export default {
   getComplexReviews,
   getComplexReviewsSimple,
@@ -155,5 +187,7 @@ export default {
   updateReview,
   deleteReview,
   voteHelpful,
-  unvoteHelpful
+  unvoteHelpful,
+  getOwnerReviews,
+  toggleReviewVisibility
 };

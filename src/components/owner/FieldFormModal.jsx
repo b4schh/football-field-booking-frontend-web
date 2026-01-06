@@ -22,6 +22,7 @@ export default function FieldFormModal({
     fieldSize: initialData?.fieldSize || initialData?.fieldType || "",
     surfaceType: initialData?.surfaceType || "",
     description: initialData?.description || "",
+    isActive: initialData?.isActive ?? true,
   });
 
   // Sync form state when modal opens or initialData changes
@@ -33,6 +34,7 @@ export default function FieldFormModal({
       fieldSize: initialData?.fieldSize || initialData?.fieldType || "",
       surfaceType: initialData?.surfaceType || "",
       description: initialData?.description || "",
+      isActive: initialData?.isActive ?? true,
     });
     setErrors({});
   }, [isOpen, initialData, complexId]);
