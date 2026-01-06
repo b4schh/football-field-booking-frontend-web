@@ -6,3 +6,6 @@ export { default as useAdminComplexes } from "./useAdminComplexes";
 export { default as useOwnerDashboard } from "./useOwnerDashboard";
 export { default as useFields } from "./useFields";
 export { default as useTimeSlots } from "./useTimeSlots";
+export { default as useOwnerBankInfo } from "./useOwnerBankInfo";
+export { default as useRecommendation } from "./useRecommendation";
+export { default as useUserLocation } from "./useUserLocation";

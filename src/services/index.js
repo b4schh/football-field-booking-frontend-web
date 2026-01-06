@@ -15,3 +15,4 @@ export { default as notificationService } from "./notificationService";
 export { default as reviewService } from "./reviewService";
 export { default as favoriteService } from "./favoriteService";
 export { default as locationService } from "./locationService";
+export { default as ownerSettingsService } from "./ownerSettingsService";

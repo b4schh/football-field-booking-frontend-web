@@ -3,7 +3,7 @@ import axios from "axios";
 // Cấu hình base URL từ environment variables hoặc sử dụng giá trị mặc định
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost/api",
-  timeout: 10000,
+  timeout: 30000, // 30 seconds - reasonable timeout for local API
   headers: {
     "Content-Type": "application/json",
   },

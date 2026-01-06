@@ -103,7 +103,7 @@ const RATING_OPTIONS = [
   { value: "3-5", label: "3★ trở lên" },
 ];
 
-export default function SearchBar() {
+export default function SearchBar({ onLocationChange }) {
   const { searchComplexes, fetchComplexes, clearSearchParams } = useComplexStore();
   
   // Location data from API
@@ -192,6 +192,27 @@ export default function SearchBar() {
     
     // Reset ward selection when province changes
     setSelectedWard("Tất cả");
+
+    // Notify parent component about location change
+    if (onLocationChange) {
+      onLocationChange({
+        province: provinceName === "Tất cả" ? null : provinceName,
+        ward: null,
+      });
+    }
+  };
+
+  // Handle ward selection
+  const handleWardChange = (wardName) => {
+    setSelectedWard(wardName);
+
+    // Notify parent component about location change
+    if (onLocationChange) {
+      onLocationChange({
+        province: selectedProvince === "Tất cả" ? null : selectedProvince,
+        ward: wardName === "Tất cả" ? null : wardName,
+      });
+    }
   };
 
   const handleSearch = async () => {
@@ -262,6 +283,11 @@ export default function SearchBar() {
     setSelectedRating("Tất cả");
     setSelectedPrice("Tất cả");
     
+    // Notify parent component about location reset
+    if (onLocationChange) {
+      onLocationChange(null);
+    }
+    
     // Clear search params and fetch all complexes without filters
     clearSearchParams();
     await fetchComplexes({ pageIndex: 1, pageSize: 12 });
@@ -310,7 +336,7 @@ export default function SearchBar() {
                 label="Phường/Xã"
                 value={selectedWard}
                 options={wards}
-                onChange={setSelectedWard}
+                onChange={handleWardChange}
                 placeholder={isLoadingWards ? "Đang tải..." : "Tất cả"}
               />
               
@@ -410,7 +436,7 @@ export default function SearchBar() {
                   label="Phường/Xã"
                   value={selectedWard}
                   options={wards}
-                  onChange={setSelectedWard}
+                  onChange={handleWardChange}
                   placeholder={isLoadingWards ? "Đang tải..." : "Tất cả"}
                 />
 

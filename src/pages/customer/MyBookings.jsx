@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiCalendar, FiClock, FiMapPin, FiFilter } from "react-icons/fi";
 import useBookingStore from "../../store/bookingStore";
+import Pagination from "../../components/common/Pagination";
 
 const BOOKING_STATUS = {
   0: { label: "Chờ upload bill", color: "bg-yellow-100 text-yellow-800 border-yellow-300" },
@@ -102,20 +103,39 @@ function BookingCard({ booking, onClick }) {
 
 export default function MyBookings() {
   const navigate = useNavigate();
-  const { myBookings, fetchMyBookings, isLoading } = useBookingStore();
+  const { myBookings, myBookingsPagination, fetchMyBookings, isLoading } = useBookingStore();
   const [statusFilter, setStatusFilter] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 12;
 
   useEffect(() => {
     loadBookings();
-  }, [statusFilter]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [statusFilter, currentPage]); // Only re-run when filter or page changes
 
   const loadBookings = async () => {
-    const params = statusFilter !== null ? { status: statusFilter } : {};
+    const params = {
+      pageIndex: currentPage,
+      pageSize: pageSize,
+    };
+    if (statusFilter !== null) {
+      params.status = statusFilter;
+    }
     await fetchMyBookings(params);
   };
 
   const handleCardClick = (bookingId) => {
     navigate(`/booking/${bookingId}/payment`);
+  };
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleFilterChange = (status) => {
+    setStatusFilter(status);
+    setCurrentPage(1); // Reset to first page when filter changes
   };
 
   const filteredBookings = myBookings || [];
@@ -137,7 +157,12 @@ export default function MyBookings() {
         {/* Header */}
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900">Đơn đặt sân của tôi</h1>
-          <p className="text-gray-600 mt-2">Quản lý tất cả các đơn đặt sân</p>
+          <p className="text-gray-600 mt-2">
+            Quản lý tất cả các đơn đặt sân 
+            {myBookingsPagination.totalRecords > 0 && (
+              <span className="font-semibold"> ({myBookingsPagination.totalRecords} đơn)</span>
+            )}
+          </p>
         </div>
 
         {/* Filter */}
@@ -148,7 +173,7 @@ export default function MyBookings() {
               <span className="font-semibold">Lọc theo trạng thái:</span>
             </div>
             <button
-              onClick={() => setStatusFilter(null)}
+              onClick={() => handleFilterChange(null)}
               className={`px-4 py-2 rounded-lg font-medium transition ${
                 statusFilter === null
                   ? "bg-blue-600 text-white"
@@ -160,7 +185,7 @@ export default function MyBookings() {
             {Object.entries(BOOKING_STATUS).map(([value, config]) => (
               <button
                 key={value}
-                onClick={() => setStatusFilter(parseInt(value))}
+                onClick={() => handleFilterChange(parseInt(value))}
                 className={`px-4 py-2 rounded-lg font-medium transition ${
                   statusFilter === parseInt(value)
                     ? "bg-blue-600 text-white"
@@ -197,6 +222,21 @@ export default function MyBookings() {
                 onClick={handleCardClick}
               />
             ))}
+          </div>
+        )}
+
+        {/* Pagination */}
+        {filteredBookings.length > 0 && myBookingsPagination.totalPages > 1 && (
+          <div className="mt-8">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={myBookingsPagination.totalPages}
+              onPageChange={handlePageChange}
+              hasNextPage={myBookingsPagination.hasNextPage}
+              hasPreviousPage={myBookingsPagination.hasPreviousPage}
+              totalRecords={myBookingsPagination.totalRecords}
+              pageSize={pageSize}
+            />
           </div>
         )}
       </div>

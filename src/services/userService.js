@@ -46,25 +46,59 @@ export const userService = {
   },
 
   /**
-   * Cập nhật profile của user hiện tại
-   * @param {Object} profileData - Profile data
-   * @returns {Promise} Updated profile
+   * Lấy thông tin profile của user hiện tại
+   * @returns {Promise} Current user profile
    */
-  updateProfile: async (profileData) => {
-    const response = await api.put("/users/profile", profileData);
+  getMyProfile: async () => {
+    const response = await api.get("/users/me");
     return response.data;
   },
 
   /**
-   * Upload avatar
-   * @param {FormData} formData - Form data chứa file avatar
-   * @returns {Promise} Avatar URL
+   * Cập nhật profile của user hiện tại
+   * @param {Object} profileData - Profile data (firstName, lastName, phone)
+   * @returns {Promise} Updated profile
    */
-  uploadAvatar: async (formData) => {
-    const response = await api.post("/users/avatar", formData, {
+  updateMyProfile: async (profileData) => {
+    const response = await api.patch("/users/me/profile", profileData);
+    return response.data;
+  },
+
+  /**
+   * Upload avatar cho user hiện tại
+   * @param {File} file - Avatar file
+   * @returns {Promise} Updated user with avatar URL
+   */
+  uploadMyAvatar: async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const response = await api.post("/users/me/avatar", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },
+    });
+    return response.data;
+  },
+
+  /**
+   * Xóa avatar của user hiện tại
+   * @returns {Promise} Updated user without avatar
+   */
+  deleteMyAvatar: async () => {
+    const response = await api.delete("/users/me/avatar");
+    return response.data;
+  },
+
+  /**
+   * Đổi mật khẩu của user hiện tại
+   * @param {string} currentPassword - Current password
+   * @param {string} newPassword - New password
+   * @returns {Promise} Success response
+   */
+  changePassword: async (currentPassword, newPassword) => {
+    const response = await api.post("/users/me/change-password", {
+      currentPassword,
+      newPassword,
     });
     return response.data;
   },

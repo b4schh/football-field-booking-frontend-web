@@ -3,7 +3,7 @@ import RoleBasedLayout from "../components/dashboard/RoleBasedLayout";
 import { ROLES } from "../utils/roleHelpers";
 
 // Import pages
-import AdminDashboardPage from "../pages/admin/AdminDashboard";
+import AdminDashboard from "../pages/admin/Dashboard";
 import AdminComplexManagement from "../pages/admin/ComplexManagement";
 import AdminComplexDetail from "../pages/admin/ComplexManagement/ComplexDetail";
 import AdminFieldDetail from "../pages/admin/ComplexManagement/FieldDetail";
@@ -17,8 +17,8 @@ export default function AdminRoutes() {
   return (
     <Routes>
       <Route element={<RoleBasedLayout role="admin" allowedRoles={[ROLES.ADMIN]} />}>
-        <Route index element={<AdminDashboardPage />} />
-        <Route path="dashboard" element={<AdminDashboardPage />} />
+        <Route index element={<AdminDashboard />} />
+        <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="users" element={<UserManagement />} />
         <Route path="complexes" element={<AdminComplexManagement />} />
         <Route path="complexes/:id" element={<AdminComplexDetail />} />

@@ -5,6 +5,7 @@ import { MdDashboard } from "react-icons/md";
 import { useAuthStore } from "../../store";
 import { useNavigate } from "react-router-dom";
 import { getRoleRedirectPath, ROLES } from "../../utils/roleHelpers";
+import { getAvatarUrl } from "../../utils/imageHelper";
 
 export default function UserMenu() {
   const [isOpen, setIsOpen] = useState(false);
@@ -80,6 +81,11 @@ export default function UserMenu() {
     },
   ];
 
+  // Get avatar URL
+  const avatarUrl = user?.avatarUrl 
+    ? getAvatarUrl(user.avatarUrl, `${user?.firstName} ${user?.lastName}`) 
+    : null;
+
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Avatar button */}
@@ -87,10 +93,18 @@ export default function UserMenu() {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 bg-white p-2 rounded-full shadow-md hover:bg-gray-50 transition"
       >
-        <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
-          <span className="text-white text-sm font-medium">
-            {user?.firstName?.[0]?.toUpperCase() || "U"}
-          </span>
+        <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center overflow-hidden">
+          {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt="Avatar"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <span className="text-white text-sm font-medium">
+              {user?.firstName?.[0]?.toUpperCase() || "U"}
+            </span>
+          )}
         </div>
       </button>
 

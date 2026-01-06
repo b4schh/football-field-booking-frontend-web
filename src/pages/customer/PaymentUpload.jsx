@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import useBookingStore from "../../store/bookingStore";
 import { useToast } from "../../store/toastStore";
+import ownerSettingsService from "../../services/ownerSettingsService";
 import PendingBookingView from "../../components/customer/PendingBookingView";
 import BookingDetailView from "../../components/customer/BookingDetailView";
 
@@ -12,6 +13,8 @@ export default function PaymentUpload() {
   const { fetchBookingById } = useBookingStore();
   
   const [booking, setBooking] = useState(null);
+  const [ownerBankInfo, setOwnerBankInfo] = useState(null);
+  const [loadingBankInfo, setLoadingBankInfo] = useState(false);
 
   useEffect(() => {
     loadBookingDetails();
@@ -22,9 +25,31 @@ export default function PaymentUpload() {
     if (result.success) {
       const bookingData = result.data.data;
       setBooking(bookingData);
+      
+      // Lấy thông tin ngân hàng của owner
+      if (bookingData.ownerId) {
+        await loadOwnerBankInfo(bookingData.ownerId);
+      }
     } else {
       toast.error("Không thể tải thông tin booking");
       navigate("/my-bookings");
+    }
+  };
+
+  const loadOwnerBankInfo = async (ownerId) => {
+    try {
+      setLoadingBankInfo(true);
+      const response = await ownerSettingsService.getOwnerBankInfo(ownerId);
+      
+      if (response.success && response.data) {
+        setOwnerBankInfo(response.data);
+      }
+    } catch (error) {
+      console.error("Error loading owner bank info:", error);
+      // Không hiển thị toast lỗi vì không phải lỗi critical
+      // Customer vẫn có thể upload bill dù không có QR
+    } finally {
+      setLoadingBankInfo(false);
     }
   };
 
@@ -55,7 +80,11 @@ export default function PaymentUpload() {
 
         {/* Conditionally render based on booking status */}
         {isPending ? (
-          <PendingBookingView booking={booking} />
+          <PendingBookingView 
+            booking={booking} 
+            ownerBankInfo={ownerBankInfo}
+            loadingBankInfo={loadingBankInfo}
+          />
         ) : (
           <BookingDetailView booking={booking} />
         )}

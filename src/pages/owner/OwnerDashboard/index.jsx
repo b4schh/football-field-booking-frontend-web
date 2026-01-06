@@ -8,6 +8,7 @@ import RecentBookings from "../../../components/owner/dashboard/RecentBookings";
 import UpcomingBookings from "../../../components/owner/dashboard/UpcomingBookings";
 import TopPeakHours from "../../../components/owner/dashboard/TopPeakHours";
 import ComplexesOverview from "../../../components/owner/dashboard/ComplexesOverview";
+import BankInfoWarning from "../../../components/owner/BankInfoWarning";
 
 export default function OwnerDashboard() {
   const {
@@ -71,6 +72,9 @@ export default function OwnerDashboard() {
             }
           />
         </motion.div>
+
+        {/* Bank Info Warning */}
+        <BankInfoWarning />
 
         {/* Stats Grid - 4 cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

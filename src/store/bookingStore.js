@@ -10,6 +10,14 @@ const useBookingStore = create((set, get) => ({
   bookings: [],
   currentBooking: null,
   myBookings: [],
+  myBookingsPagination: {
+    pageIndex: 1,
+    pageSize: 12,
+    totalRecords: 0,
+    totalPages: 0,
+    hasPreviousPage: false,
+    hasNextPage: false,
+  },
   ownerBookings: [],
   ownerBookingsPagination: {
     pageIndex: 1,
@@ -212,15 +220,23 @@ const useBookingStore = create((set, get) => ({
   },
 
   /**
-   * Lấy booking của customer
+   * Lấy booking của customer với phân trang
    */
   fetchMyBookings: async (params = {}) => {
     set({ isLoading: true, error: null });
     try {
       const response = await bookingService.getMyBookings(params);
-      const bookings = response.data || [];
-      set({ myBookings: bookings, isLoading: false });
-      return { success: true, data: bookings };
+      const bookings = response?.data || [];
+      const pagination = {
+        pageIndex: response?.pageIndex || 1,
+        pageSize: response?.pageSize || 12,
+        totalRecords: response?.totalRecords || 0,
+        totalPages: response?.totalPages || 0,
+        hasPreviousPage: response?.hasPreviousPage || false,
+        hasNextPage: response?.hasNextPage || false,
+      };
+      set({ myBookings: bookings, myBookingsPagination: pagination, isLoading: false });
+      return { success: true, data: bookings, pagination };
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || "Không thể tải booking của bạn";

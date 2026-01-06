@@ -13,6 +13,7 @@ import ComplexSetupWizard from "../components/owner/ComplexSetupWizard";
 import OwnerBookingManagement from "../pages/owner/BookingManagement";
 import BookingDetail from "../pages/owner/BookingManagement/BookingDetail";
 import ReviewManagement from "../pages/owner/ReviewManagement";
+import OwnerSettings from "../pages/owner/OwnerSettings";
 
 export default function OwnerRoutes() {
   return (
@@ -40,8 +41,10 @@ export default function OwnerRoutes() {
         {/* Review Management Routes */}
         <Route path="reviews" element={<ReviewManagement />} />
 
+        <Route path="settings" element={<OwnerSettings />} />
+
         {/* Các routes khác sẽ được thêm sau:
-        <Route path="images" element={...} />
+        <Route path="image element={...} />
         <Route path="settings" element={...} />
         */}
       </Route>

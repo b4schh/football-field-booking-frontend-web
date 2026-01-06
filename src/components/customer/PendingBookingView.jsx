@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { FiUpload, FiClock, FiAlertCircle, FiCheckCircle, FiImage } from "react-icons/fi";
 import useBookingStore from "../../store/bookingStore";
 import { useToast } from "../../store/toastStore";
+import ownerSettingsService from "../../services/ownerSettingsService";
 import BookingInfoCard from "./BookingInfoCard";
 
-export default function PendingBookingView({ booking }) {
+export default function PendingBookingView({ booking, ownerBankInfo, loadingBankInfo }) {
   const navigate = useNavigate();
   const toast = useToast();
   const { uploadPaymentProof, isLoading } = useBookingStore();
@@ -147,30 +148,44 @@ export default function PendingBookingView({ booking }) {
           <div className="bg-white rounded-xl p-6 shadow-sm">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Thông tin chuyển khoản</h2>
             
-            {/* QR Code Placeholder */}
+            {/* QR Code */}
             <div className="bg-gray-100 rounded-lg p-6 flex flex-col items-center justify-center mb-4">
-              <div className="w-64 h-64 bg-white rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
-                <div className="text-center text-gray-500">
-                  <FiImage size={48} className="mx-auto mb-2" />
-                  <p className="text-sm">QR Code chủ sân</p>
-                  <p className="text-xs mt-1">(Đang cập nhật)</p>
+              {loadingBankInfo ? (
+                <div className="w-64 h-64 flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
                 </div>
-              </div>
+              ) : ownerBankInfo?.bankQrCodeUrl ? (
+                <div className="w-64 h-64 bg-white rounded-lg flex items-center justify-center border-2 border-gray-300">
+                  <img
+                    src={ownerSettingsService.getFullImageUrl(ownerBankInfo.bankQrCodeUrl)}
+                    alt="QR Code"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+              ) : (
+                <div className="w-64 h-64 bg-white rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
+                  <div className="text-center text-gray-500">
+                    <FiImage size={48} className="mx-auto mb-2" />
+                    <p className="text-sm">QR Code chưa có</p>
+                    <p className="text-xs mt-1">Vui lòng chuyển khoản thủ công</p>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Bank Details */}
             <div className="bg-blue-50 p-4 rounded-lg space-y-2">
               <div>
                 <span className="text-sm text-gray-600">Ngân hàng: </span>
-                <span className="font-semibold">MB Bank</span>
+                <span className="font-semibold">{ownerBankInfo?.bankName || "Đang tải..."}</span>
               </div>
               <div>
                 <span className="text-sm text-gray-600">Số tài khoản: </span>
-                <span className="font-mono font-bold">0123456789</span>
+                <span className="font-mono font-bold">{ownerBankInfo?.bankAccountNumber || "Đang tải..."}</span>
               </div>
               <div>
                 <span className="text-sm text-gray-600">Chủ tài khoản: </span>
-                <span className="font-semibold">{booking.ownerName}</span>
+                <span className="font-semibold">{ownerBankInfo?.bankAccountName || booking.ownerName || "Đang tải..."}</span>
               </div>
               <div>
                 <span className="text-sm text-gray-600">Số tiền: </span>
